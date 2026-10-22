@@ -6,6 +6,7 @@
  */
 
 #include "StdInc.h"
+#include <BasarabiaConfig.h>
 #include "FontRendererImpl.h"
 #include <DrawCommands.h>
 #include <grcTexture.h>
@@ -394,7 +395,7 @@ static InitFunction initFunction([] ()
 				return L"";
 			};
 
-			brandName = L"FiveM";
+			brandName = BRP_PRODUCT_NAME_W;
 			brandingEmoji = getDayEmoji();
 
 #if defined(IS_RDR3)

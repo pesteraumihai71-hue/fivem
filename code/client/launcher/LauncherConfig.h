@@ -7,6 +7,12 @@
 
 #pragma once
 
+#include <BasarabiaConfig.h>
+
+#if defined(GTA_FIVE) && defined(BRP_UPDATER_URL)
+#define CFX_UPDATER_URL BRP_UPDATER_URL
+#endif
+
 #ifndef CFX_UPDATER_URL
 #define CFX_UPDATER_URL "https://content.cfx.re/updates"
 #endif
@@ -24,10 +30,10 @@
 #define GAME_EXECUTABLE L"MaxPayne3.exe"
 #elif defined(GTA_FIVE)
 #define PRODUCT_ID CfxState::ProductID::FIVEM
-#define PRODUCT_NAME L"FiveM"
+#define PRODUCT_NAME BRP_PRODUCT_NAME_W
 #define GAME_EXECUTABLE L"GTA5.exe"
-#define CONTENT_NAME "fivereborn"
-#define LINK_PROTOCOL L"fivem"
+#define CONTENT_NAME BRP_CONTENT_NAME
+#define LINK_PROTOCOL BRP_LINK_PROTOCOL_W
 #elif defined(IS_RDR3)
 #define PRODUCT_ID CfxState::ProductID::REDM
 #define PRODUCT_NAME L"RedM"

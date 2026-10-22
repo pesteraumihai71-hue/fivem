@@ -7,6 +7,7 @@
 
 #include "StdInc.h"
 #include "Utils.h"
+#include <BasarabiaConfig.h>
 
 #include <direct.h>
 #include <io.h>
@@ -36,7 +37,7 @@ fwPlatformString GetAbsoluteCitPath()
 #ifdef IS_RDR3
 				if (!CreateDirectory((citizenPath + L"RedM.app").c_str(), nullptr))
 #else
-				if (!CreateDirectory((citizenPath + L"FiveM.app").c_str(), nullptr))
+				if (!CreateDirectory((citizenPath + BRP_PRODUCT_NAME_W L".app").c_str(), nullptr))
 #endif
 				{
 					DWORD error = GetLastError();
@@ -56,7 +57,7 @@ fwPlatformString GetAbsoluteCitPath()
 #ifdef IS_RDR3
 								   L"RedM.app";
 #else
-								   L"FiveM.app";
+								   BRP_PRODUCT_NAME_W L".app";
 #endif
 
 			if (GetFileAttributes(subPath.c_str()) != INVALID_FILE_ATTRIBUTES && (GetFileAttributes(subPath.c_str()) & FILE_ATTRIBUTE_DIRECTORY) != 0)

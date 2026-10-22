@@ -6,6 +6,7 @@
  */
 
 #include "StdInc.h"
+#include <BasarabiaConfig.h>
 #include "NetLibrary.h"
 #include <base64.h>
 #include "ICoreGameInit.h"
@@ -364,7 +365,7 @@ void NetLibrary::ProcessOOB(const NetAddress& from, const char* oob, size_t leng
 #ifndef IS_RDR3
 				SetWindowText(CoreGetGameWindow(), va(
 #ifdef GTA_FIVE
-					L"FiveM® by Cfx.re"
+					BRP_WINDOW_TITLE_W
 #elif defined(IS_RDR3)
 					L"RedM® by Cfx.re"
 #endif

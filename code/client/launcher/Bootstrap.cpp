@@ -86,15 +86,29 @@ bool Bootstrap_DoBootstrap()
 		return DL_RequestURL(va(CFX_UPDATER_URL "/heads/" CONTENT_NAME "/%s?time=%lld", updateChannel, _time64(NULL)), bootstrapVersion, sizeof(bootstrapVersion), contentHeaders);
 	};
 
-	int result = fetchContent(GetUpdateChannel());
+	// Basarabia RP: fără server propriu de update-uri, nu contactăm deloc CDN-ul
+	// Cfx.re - altfel clientul și-ar suprascrie fișierele cu FiveM-ul oficial.
+#if defined(GTA_FIVE) && !defined(BRP_UPDATER_URL)
+	constexpr bool brpNoOnlineUpdate = true;
+#else
+	constexpr bool brpNoOnlineUpdate = false;
+#endif
+
+	int result = brpNoOnlineUpdate ? -1 : fetchContent(GetUpdateChannel());
 	bool updateDataValid = true;
 
 	if (result != 0)
 	{
 		bool recovered = false;
 
+		if (brpNoOnlineUpdate && GetFileAttributes(MakeRelativeCitPath(L"CoreRT.dll").c_str()) == INVALID_FILE_ATTRIBUTES)
+		{
+			UI_DisplayError(BRP_PRODUCT_NAME_W L" nu este instalat corect (lipsește CoreRT.dll). Reinstalați jocul folosind installerul de pe site.");
+			return false;
+		}
+
 		// if not production, try to recover
-		if (GetUpdateChannel() != "production")
+		if (!brpNoOnlineUpdate && GetUpdateChannel() != "production")
 		{
 			int newResult = fetchContent("production");
 
@@ -152,7 +166,7 @@ bool Bootstrap_DoBootstrap()
 	{
 		if (GetFileAttributes(MakeRelativeCitPath(L"GTA5.exe").c_str()) != INVALID_FILE_ATTRIBUTES || GetFileAttributes(MakeRelativeCitPath(L"..\\GTA5.exe").c_str()) != INVALID_FILE_ATTRIBUTES)
 		{
-			MessageBox(NULL, L"Please do not place FiveM.exe in your game folder. Make a new empty folder (for example, on your desktop) instead.", L"O\x448\x438\x431\x43A\x430", MB_OK | MB_ICONSTOP);
+			MessageBox(NULL, L"Nu instalați " BRP_PRODUCT_NAME_W L" în folderul GTA V. Folosiți un folder separat (de exemplu C:\\Basarabia RP).", L"O\x448\x438\x431\x43A\x430", MB_OK | MB_ICONSTOP);
 			return false;
 		}
 	}

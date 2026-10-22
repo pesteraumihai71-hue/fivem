@@ -13,8 +13,10 @@
 
 #include <UrlConfirmationExport.h>
 
+#include <BasarabiaConfig.h>
+
 #if defined(GTA_FIVE)
-#define PRODUCT_NAME "FiveM"
+#define PRODUCT_NAME BRP_PRODUCT_NAME_A
 #elif defined(IS_RDR3)
 #define PRODUCT_NAME "RedM"
 #endif

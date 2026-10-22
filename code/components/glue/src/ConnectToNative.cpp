@@ -36,6 +36,7 @@
 
 #include <CfxState.h>
 #include <HostSharedData.h>
+#include <BasarabiaConfig.h>
 
 #include <skyr/url.hpp>
 
@@ -1409,6 +1410,20 @@ void Component_RunPreInit()
 	}
 
 	LocalFree(argv);
+
+#ifdef GTA_FIVE
+	// Basarabia RP: dacă jocul nu a fost pornit cu un link anume,
+	// se conectează automat la serverul nostru (BasarabiaConfig.h).
+	if (connectHost.empty() && authPayload.empty() && (hostData->IsMasterProcess() || hostData->IsGameProcess()))
+	{
+		static const char brpServer[] = BRP_SERVER_ADDRESS;
+
+		if (brpServer[0] != '\0')
+		{
+			connectHost = brpServer;
+		}
+	}
+#endif
 
 	if (!connectHost.empty())
 	{

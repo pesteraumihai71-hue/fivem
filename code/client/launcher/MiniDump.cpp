@@ -451,7 +451,7 @@ static void OverloadCrashData(TASKDIALOGCONFIG* config)
 	if (blame)
 	{
 		static std::wstring errTitle = fmt::sprintf(L"%s encountered an error", blame);
-		static std::wstring errDescription = fmt::sprintf(L"FiveM crashed due to %s.\n%s", blame, blame_two);
+		static std::wstring errDescription = fmt::sprintf(BRP_PRODUCT_NAME_W L" crashed due to %s.\n%s", blame, blame_two);
 
 		config->pszMainInstruction = errTitle.c_str();
 		config->pszContent = errDescription.c_str();
@@ -1376,7 +1376,7 @@ void InitializeDumpServer(int inheritedHandle, int parentPid)
 
 						if (!cd.empty())
 						{
-							mainInstruction = gettext(L"FiveM crashed... but we're on it!");
+							mainInstruction = gettext(BRP_PRODUCT_NAME_W L" s-a închis neașteptat.");
 							cd += "\n\n";
 						}
 
