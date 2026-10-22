@@ -42,6 +42,9 @@ UninstallDisplayIcon={app}\{#AppExe}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
+; Imaginile cu logo-ul Basarabia RP (normal + ecrane cu scalare 200%)
+WizardImageFile=assets\wizard_1x.bmp,assets\wizard_2x.bmp
+WizardSmallImageFile=assets\small_1x.bmp,assets\small_2x.bmp
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
