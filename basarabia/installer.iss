@@ -2,19 +2,22 @@
 ;  Basarabia Roleplay - installer (Inno Setup 6)
 ;
 ;  Cum se folosește:
-;   1. Compilați clientul (Release) - vezi README-BASARABIA.md.
-;   2. Testați-l din folderul de build (code\bin\five\release).
-;   3. Deschideți acest fișier în Inno Setup și apăsați Build > Compile.
-;   4. Rezultatul: basarabia\output\BasarabiaRP-Setup.exe
+;   1. Rulați basarabia\ci\build.ps1 (sau build-ul automat din GitHub Actions)
+;      -> clientul asamblat apare în dist\
+;   2. Deschideți acest fișier în Inno Setup și apăsați Build > Compile
+;      (sau: iscc basarabia\installer.iss).
+;   3. Rezultatul: basarabia\output\BasarabiaRP-Setup.exe
 ; ============================================================================
 
 #define AppName      "Basarabia RP"
 #define AppLongName  "Basarabia Roleplay"
-#define AppVersion   "1.0.0"
+#ifndef AppVersion
+  #define AppVersion "1.0.0"
+#endif
 #define AppExe       "BasarabiaRP.exe"
 #define AppSite      "https://basarabiarp.md"
 ; Folderul cu clientul compilat (relativ la acest fișier)
-#define BuildDir     "..\code\bin\five\release"
+#define BuildDir     "..\dist"
 
 [Setup]
 ; Un GUID unic pentru produsul vostru - NU îl schimbați după prima lansare
@@ -54,7 +57,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 ; Tot clientul compilat, fără fișierele de debug
 Source: "{#BuildDir}\*"; DestDir: "{app}"; \
-  Excludes: "*.pdb,*.lib,*.exp,*.ilk,*.iobj,*.ipdb,*.formaldev,cache\*,logs\*,crashes\*"; \
+  Excludes: "*.pdb,*.lib,*.exp,*.ilk,*.iobj,*.ipdb,*.formaldev"; \
   Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
@@ -65,9 +68,9 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}\cache"
-Type: filesandordirs; Name: "{app}\logs"
-Type: filesandordirs; Name: "{app}\crashes"
+Type: filesandordirs; Name: "{app}\{#AppName}.app\data"
+Type: filesandordirs; Name: "{app}\{#AppName}.app\logs"
+Type: filesandordirs; Name: "{app}\{#AppName}.app\crashes"
 
 [Code]
 // Verifică dacă GTA V (Legacy) e instalat; dacă nu, avertizează jucătorul.
