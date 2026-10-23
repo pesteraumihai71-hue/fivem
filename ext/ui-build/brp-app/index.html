@@ -5,114 +5,287 @@
 <title>Basarabia RP</title>
 <style>
   :root{
-    --night:#0b0d12;
-    --panel:rgba(12,14,20,.78);
-    --line:rgba(200,204,212,.12);
-    --text:#c8ccd4;
-    --muted:#7b808b;
-    --white:#f3f4f6;
-    --signal:#e3192d;
-    --signal-hi:#f02a3d;
+    --night:#0a0b0f;
+    --side:#0d0e12;
+    --panel:rgba(16,17,22,.86);
+    --line:rgba(255,255,255,.08);
+    --text:#c9ccd3;
+    --muted:#8a8e98;
+    --white:#f4f5f7;
+    --red:#e3192d;
+    --red-hi:#ff2e42;
+    --red-deep:#8e0d19;
+    --green:#22c55e;
     --display:"Bahnschrift","Segoe UI",Arial,sans-serif;
     --body:"Segoe UI",Arial,sans-serif;
+    --script:"Segoe Script","Brush Script MT",cursive;
+    --side-w:clamp(210px,16.5vw,300px);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;overflow:hidden;background:var(--night);color:var(--text);font:400 16px/1.5 var(--body);user-select:none;-webkit-font-smoothing:antialiased}
-  body{background:url(static/media/32000f5a0b55eccb6d79bg2.jpg) center/cover no-repeat,var(--night)}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--night);color:var(--text);font:400 15px/1.5 var(--body);user-select:none;-webkit-font-smoothing:antialiased}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  button:focus-visible{outline:2px solid var(--white);outline-offset:3px}
+  svg{flex:none}
 
-  .shell{position:absolute;inset:0;display:grid;grid-template-columns:minmax(380px,560px) 1fr;gap:6vw;padding:7vh 6vw 9vh}
+  /* ---------- structura ---------- */
+  .app{position:absolute;inset:0;display:grid;grid-template-columns:var(--side-w) 1fr;grid-template-rows:1fr 52px}
 
-  /* stanga: identitate + actiuni */
-  .left{display:flex;flex-direction:column;justify-content:center}
-  .logo{width:min(380px,30vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,.65));margin-left:-12px}
-  .tag{margin:14px 0 0;font:600 20px/1.2 var(--display);letter-spacing:.02em;color:var(--white)}
-  .online{margin:8px 0 0;color:var(--muted);font-size:15px;min-height:22px}
-  .online b{color:var(--white);font-weight:600}
-  .actions{margin-top:36px;display:flex;flex-direction:column;gap:12px;max-width:380px}
-  button{font:inherit;cursor:pointer;border:0;border-radius:6px;transition:background-color .15s,transform .1s}
-  button:focus-visible{outline:3px solid var(--white);outline-offset:3px}
-  .play{background:var(--signal);color:#fff;font:700 30px/1 var(--display);letter-spacing:.04em;padding:22px 26px;text-align:left;
-        box-shadow:0 14px 40px rgba(227,25,45,.35),inset 0 -4px 0 rgba(0,0,0,.25)}
-  .play:hover{background:var(--signal-hi)}
+  /* ---------- bara laterala ---------- */
+  .side{grid-row:1/3;position:relative;background:linear-gradient(180deg,#121318 0%,var(--side) 60%,#0b0b0e 100%);border-right:1px solid rgba(227,25,45,.18);display:flex;flex-direction:column;z-index:2}
+  .side .brand{display:flex;justify-content:center;padding:clamp(14px,3vh,34px) 18px clamp(18px,3.5vh,40px);border-bottom:1px solid var(--line);
+               background:radial-gradient(60% 70% at 50% 45%,rgba(227,25,45,.22),transparent 70%)}
+  .side .brand img{width:82%;max-width:240px;filter:drop-shadow(0 10px 28px rgba(227,25,45,.35))}
+  .nav{display:flex;flex-direction:column;padding-top:0}
+  .nav button{display:flex;align-items:center;gap:18px;padding:clamp(14px,2.6vh,24px) 28px;font:600 clamp(16px,1.15vw,20px)/1 var(--body);color:var(--text);text-align:left;position:relative;transition:background-color .15s,color .15s}
+  .nav button svg{width:26px;height:26px;color:#a3a7b0;transition:color .15s}
+  .nav button:hover{background:rgba(255,255,255,.04);color:var(--white)}
+  .nav button[aria-current="page"]{color:var(--white);background:linear-gradient(90deg,rgba(227,25,45,.55),rgba(227,25,45,.12) 70%,transparent);box-shadow:inset 0 1px 0 rgba(255,80,90,.35),inset 0 -1px 0 rgba(255,80,90,.35)}
+  .nav button[aria-current="page"]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red-hi);box-shadow:0 0 14px var(--red)}
+  .nav button[aria-current="page"] svg{color:var(--red-hi)}
+  .motto{margin-top:auto;padding:0 28px clamp(70px,10vh,110px);position:relative}
+  .motto::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;background:url(static/media/32000f5a0b55eccb6d79bg2.jpg) 12% 100%/auto 230% no-repeat;opacity:.55;-webkit-mask-image:linear-gradient(transparent,#000 60%);z-index:-1}
+  .motto p{margin:0;font:400 clamp(17px,1.25vw,22px)/1.45 var(--script);color:#c8c9ce;transform:rotate(-6deg);transform-origin:left}
+  .motto i{display:block;width:60%;height:2px;margin-top:10px;background:linear-gradient(90deg,var(--red),transparent);transform:rotate(-6deg);border-radius:2px}
+
+  /* ---------- zona principala ---------- */
+  .main{position:relative;overflow:hidden;background:url(static/media/32000f5a0b55eccb6d79bg2.jpg) center 70%/cover no-repeat,var(--night)}
+  .main::before{content:"";position:absolute;inset:0;background:
+      radial-gradient(70% 55% at 30% 38%,rgba(227,25,45,.10),transparent 70%),
+      linear-gradient(90deg,rgba(8,9,12,.82) 0%,rgba(8,9,12,.35) 55%,rgba(8,9,12,.55) 100%),
+      linear-gradient(180deg,rgba(8,9,12,0) 45%,rgba(8,9,12,.92) 100%);pointer-events:none}
+  .view{position:absolute;inset:0;padding:clamp(28px,6vh,72px) clamp(28px,3.4vw,64px) 24px;display:none;flex-direction:column}
+  .view.on{display:flex}
+  .close{position:absolute;top:10px;right:12px;z-index:5;width:44px;height:36px;display:grid;place-items:center;color:#9aa0aa;border-radius:4px}
+  .close:hover{background:var(--red);color:#fff}
+
+  /* ---------- acasa: hero ---------- */
+  .hero{position:relative;display:grid;grid-template-columns:1fr minmax(320px,440px);gap:3vw;align-items:end;flex:1 0 auto;padding-bottom:clamp(18px,3.5vh,40px)}
+  .title{margin:0;line-height:.86}
+  .title .a{display:block;font:800 clamp(56px,6.6vw,124px)/.9 var(--display);letter-spacing:.01em;text-transform:uppercase;
+            background:linear-gradient(180deg,#ffffff 0%,#e7e9ee 38%,#9da2ad 52%,#e9ebef 70%,#b8bcc6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+            filter:drop-shadow(0 3px 0 #2a2c33) drop-shadow(0 12px 30px rgba(0,0,0,.8))}
+  .title .b{display:block;margin:-.12em 0 0 .55em;font:italic 900 clamp(44px,5.2vw,98px)/.95 var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--red);transform:skewX(-8deg);
+            text-shadow:0 0 1px #ff6a76,0 2px 0 #6d0711,0 0 34px rgba(227,25,45,.55)}
+  .slogan{margin:clamp(14px,2.4vh,26px) 0 0;font:500 clamp(14px,1.05vw,19px)/1 var(--display);letter-spacing:.55em;color:#e3e5ea}
+
+  .cta{margin-top:clamp(18px,3.4vh,34px);max-width:560px}
+  .play{display:flex;align-items:center;gap:22px;width:100%;padding:0 30px;height:clamp(62px,7.2vh,80px);border-radius:6px;
+        background:linear-gradient(180deg,#f0283b 0%,#c8101f 100%);color:#fff;font:800 clamp(26px,2vw,36px)/1 var(--display);letter-spacing:.06em;
+        box-shadow:0 0 0 1px rgba(255,120,130,.35) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 16px 44px rgba(227,25,45,.45);transition:filter .15s,transform .1s}
+  .play:hover{filter:brightness(1.1)}
+  .play:focus-visible{outline:2px solid rgba(255,140,150,.7);outline-offset:3px}
   .play:active{transform:translateY(1px)}
-  .row{display:flex;gap:10px}
-  .ghost{flex:1;background:rgba(22,25,33,.92);color:var(--white);border:1px solid var(--line);padding:13px 16px;font-weight:600;text-align:left}
-  .ghost:hover{background:rgba(40,44,56,.95)}
+  .play .go{margin-left:auto;font-weight:400;opacity:.9}
 
-  /* conectare */
-  .connect{display:none;margin-top:36px;max-width:440px}
-  .connect h2{margin:0;font:700 26px/1.2 var(--display);color:var(--white)}
-  .connect p{margin:8px 0 0;color:var(--text);min-height:24px}
-  .bar{margin-top:18px;height:6px;background:rgba(243,244,246,.1);border-radius:3px;overflow:hidden}
-  .bar i{display:block;height:100%;width:0;background:var(--signal);transition:width .3s}
+  .stats{display:flex;align-items:center;margin-top:clamp(16px,3vh,28px);gap:0}
+  .stat{display:flex;align-items:center;gap:14px;padding:0 28px;border-left:1px solid rgba(255,255,255,.14)}
+  .stat:first-child{padding-left:0;border-left:0}
+  .stat div{white-space:nowrap}
+  .stat svg{width:34px;height:34px;color:#b7bbc4}
+  .stat b{display:block;font:700 clamp(17px,1.25vw,23px)/1.2 var(--display);color:var(--white)}
+  .stat span{display:block;color:var(--text);font-size:clamp(13px,.85vw,15px)}
+  .dot{width:16px;height:16px;border-radius:50%;background:#6b7280;flex:none}
+  .dot.ok{background:var(--green);box-shadow:0 0 12px rgba(34,197,94,.8)}
+  .dot.bad{background:var(--red);box-shadow:0 0 12px rgba(227,25,45,.8)}
+
+  /* conectare / eroare (inlocuiesc butonul) */
+  .connect{display:none;max-width:560px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:6px;padding:20px 24px}
+  .connect h2{margin:0;font:700 22px/1.2 var(--display);color:var(--white)}
+  .connect p{margin:6px 0 0;min-height:22px}
+  .bar{margin-top:16px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
   .bar.indeterminate i{width:35%;animation:slide 1.2s ease-in-out infinite}
   @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
-  .connect .ghost{margin-top:22px;flex:none;width:auto;display:inline-block}
-  .error h2{color:var(--signal-hi)}
-  .error p{color:var(--white);white-space:pre-line;max-height:40vh;overflow:auto;user-select:text}
-
-  body[data-state="connecting"] .actions,body[data-state="error"] .actions{display:none}
+  .btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 16px;border-radius:5px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--white);font-weight:600}
+  .btn:hover{background:rgba(255,255,255,.13)}
+  .btn.red{background:var(--red);border-color:transparent}
+  .btn.red:hover{background:var(--red-hi)}
+  .error h2{color:var(--red-hi)}
+  .error p{color:var(--white);white-space:pre-line;max-height:22vh;overflow:auto;user-select:text}
+  body[data-state="connecting"] .cta-idle,body[data-state="error"] .cta-idle{display:none}
   body[data-state="connecting"] #connecting{display:block}
   body[data-state="error"] #error{display:block}
 
-  /* dreapta: noutati */
-  .right{display:flex;flex-direction:column;justify-content:center;align-items:flex-end}
-  .news{width:min(520px,100%);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:26px 28px;backdrop-filter:blur(6px)}
-  .news h3{margin:0 0 16px;font:700 22px/1.2 var(--display);color:var(--white)}
-  .news article{padding:14px 0;border-top:1px solid var(--line)}
-  .news article:first-of-type{border-top:0;padding-top:0}
-  .news time{display:block;color:var(--muted);font-size:13px}
-  .news h4{margin:2px 0 4px;color:var(--white);font-size:17px}
-  .news p{margin:0;font-size:15px}
-  .news .empty{color:var(--muted)}
+  /* card server */
+  .srv{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 22px;backdrop-filter:blur(6px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+  .srv header{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .srv header svg{width:24px;height:24px;color:#cfd2d8}
+  .srv header b{font:700 15px/1.2 var(--display);color:var(--white);letter-spacing:.02em}
+  .pill{margin-left:auto;padding:5px 14px;border-radius:5px;font:700 14px/1 var(--display);letter-spacing:.08em;border:1px solid}
+  .pill.ok{color:#4ade80;border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.12)}
+  .pill.bad{color:#ff6b78;border-color:rgba(227,25,45,.6);background:rgba(227,25,45,.12)}
+  .pill.wait{color:var(--muted);border-color:var(--line)}
+  .srv ul{list-style:none;margin:12px 0 0;padding:0}
+  .srv li{display:flex;align-items:center;gap:14px;padding:7px 0;color:var(--white);font-size:14px}
+  .srv li svg{width:20px;height:20px;color:#9ca1ab}
 
-  .foot{position:absolute;left:6vw;right:6vw;bottom:3.5vh;display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
+  /* ---------- noutati ---------- */
+  .newshead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .newshead h3{margin:0;font:700 clamp(16px,1.15vw,20px)/1 var(--display);letter-spacing:.06em;color:var(--white);text-transform:uppercase}
+  .link{display:inline-flex;align-items:center;gap:8px;color:var(--red-hi);font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+  .link:hover{color:#ff6b78}
+  .link svg{width:18px;height:18px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.4vw,24px)}
+  .card{display:flex;flex-direction:column;background:rgba(18,19,24,.92);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-align:left;transition:border-color .15s,transform .15s}
+  .card:hover{border-color:rgba(227,25,45,.55);transform:translateY(-2px)}
+  .card .img{position:relative;height:clamp(84px,12vh,130px);background-size:cover;background-position:center;border-bottom:1px solid var(--line)}
+  .card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,11,15,.6))}
+  .tag{position:absolute;left:14px;top:14px;z-index:1;padding:4px 10px;border-radius:4px;background:var(--red);color:#fff;font:700 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
+  .card .body{padding:14px 18px 16px;display:flex;flex-direction:column;flex:1}
+  .card h4{margin:0 0 6px;font:700 clamp(16px,1.15vw,20px)/1.25 var(--display);color:var(--white)}
+  .card p{margin:0;font-size:clamp(13px,.82vw,15px);color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .sign{margin-top:6px;color:var(--muted);font-size:13px;font-style:italic}
+  .card .link{margin-top:auto;padding-top:10px}
 
-  @media (max-width:1100px){.shell{grid-template-columns:1fr}.right{display:none}}
-  @media (prefers-reduced-motion:reduce){.bar.indeterminate i{animation:none;width:100%}}
+  /* ---------- stiri (lista completa) ---------- */
+  .page h2{margin:0 0 6px;font:800 clamp(30px,2.6vw,46px)/1.1 var(--display);color:var(--white);text-transform:uppercase}
+  .page .sub{margin:0 0 24px;color:var(--muted)}
+  .scroll{flex:1;min-height:0;overflow:auto;padding-right:8px}
+  .scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
+  .post{display:grid;grid-template-columns:clamp(180px,18vw,300px) 1fr;background:rgba(18,19,24,.92);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:18px;max-width:1100px}
+  .post .img{position:relative;min-height:170px;background-size:cover;background-position:center}
+  .post .body{padding:20px 26px}
+  .post h4{margin:0 0 8px;font:700 22px/1.25 var(--display);color:var(--white)}
+  .post p{margin:0 0 8px;white-space:pre-line;user-select:text}
+  .post .sign{color:var(--muted);font-style:italic}
+
+  /* ---------- setari ---------- */
+  .box{max-width:720px;background:rgba(18,19,24,.92);border:1px solid var(--line);border-radius:8px;padding:8px 24px;margin-bottom:18px}
+  .box .row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-top:1px solid var(--line)}
+  .box .row:first-child{border-top:0}
+  .box .row b{display:block;color:var(--white);font-weight:600}
+  .box .row span{color:var(--muted);font-size:14px}
+  .box .row .btn{margin-top:0;flex:none}
+  .mono{font-family:Consolas,monospace;color:var(--white);user-select:text}
+
+  /* ---------- bara de jos ---------- */
+  .foot{grid-column:2;display:flex;align-items:center;gap:14px;padding:0 clamp(20px,2vw,32px);background:#0c0d11;border-top:1px solid var(--line);color:#d4d6db;font-size:13px;z-index:2}
+  .foot svg{width:22px;height:22px;color:#b3b7c0}
+  .foot .name{font:600 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+  .foot .right{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--text)}
+  .foot .dot{width:10px;height:10px}
+
+  @media (max-width:1500px){.hero{grid-template-columns:1fr}.srv{display:none}.stat{padding:0 18px}}
+  @media (max-height:820px){
+    .view{padding-top:22px}
+    .title .a{font-size:clamp(48px,5vw,76px)}.title .b{font-size:clamp(40px,4.2vw,64px)}
+    .slogan{margin-top:12px}.cta{margin-top:16px}.play{height:58px}.stats{margin-top:12px}
+    .hero{padding-bottom:16px}.cards .card p{-webkit-line-clamp:2}.card .img{height:64px}.card .body{padding:10px 16px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){.bar.indeterminate i{animation:none;width:100%}*{transition:none!important}}
 </style>
 </head>
 <body data-state="idle">
-  <div class="shell">
-    <section class="left">
-      <img class="logo" src="static/media/logo.png" alt="Basarabia RP">
-      <p class="tag">Server de roleplay pe GTA V</p>
-      <p class="online" id="online"></p>
 
-      <div class="actions">
-        <button class="play" id="play" autofocus>JOACĂ</button>
-        <div class="row">
-          <button class="ghost" id="discord">Discord</button>
-          <button class="ghost" id="quit">Ieșire</button>
+<!-- iconite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 4h13v16H6a2 2 0 0 1-2-2zM17 8h3v10a2 2 0 0 1-2 2h-1M7 8h7M7 12h7M7 16h5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L14.9 3h-4l-.4 2.7a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.4 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1l.4 2.9h4l.4-2.7a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM12.9 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-.9 0)"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M6 3.5v17L20 12z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path fill="currentColor" d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7.5 0a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 13c-4 0-7 2-7 4.5V20h14v-2.5C16 15 13 13 9 13zm7.5 0c-.6 0-1.2.1-1.7.2 1.4 1 2.2 2.4 2.2 4.3V20H22v-2.5c0-2.5-2.5-4.5-5.5-4.5z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h3.5v4H3zm5.5-4H12v8H8.5zm5.5-4h3.5v12H14zm5.5-5H23v17h-3.5z" transform="translate(-1 0)"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h18v6H3zM3 14h18v6H3z"/><path fill="currentColor" d="M6 6.2h2v1.6H6zm0 10h2v1.6H6zm4-10h2v1.6h-2zm0 10h2v1.6h-2z"/></symbol>
+  <symbol id="i-discord" viewBox="0 0 24 24"><path fill="currentColor" d="M19.5 5.3A17 17 0 0 0 15.3 4l-.5 1a15.6 15.6 0 0 0-5.6 0l-.5-1a17 17 0 0 0-4.2 1.3C1.8 9.4 1 13.4 1.4 17.3A17 17 0 0 0 6.6 20l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.2 12.2 0 0 0 11.2 0l.4.3a11 11 0 0 1-1.7.8l1.1 1.8a17 17 0 0 0 5.2-2.7c.5-4.5-.8-8.5-3.1-12zM8.5 15c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2zm7 0c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 12h15m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="m12 3 9 5-9 5-9-5zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+  <symbol id="i-exit" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- ====================== bara laterala ====================== -->
+  <aside class="side">
+    <div class="brand"><img src="static/media/logo.png" alt="Basarabia RP"></div>
+    <nav class="nav" aria-label="Meniu">
+      <button data-view="home" aria-current="page"><svg><use href="#i-home"/></svg>Acasă</button>
+      <button data-view="news"><svg><use href="#i-news"/></svg>Știri</button>
+      <button data-view="settings"><svg><use href="#i-gear"/></svg>Setări</button>
+    </nav>
+    <div class="motto"><p>Mai mult<br>decât un joc.<br>O comunitate.</p><i></i></div>
+  </aside>
+
+  <!-- ====================== continut ====================== -->
+  <main class="main">
+    <button class="close" id="close" title="Ieșire"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+
+    <!-- ACASA -->
+    <section class="view on" id="v-home">
+      <div class="hero">
+        <div>
+          <h1 class="title"><span class="a">Basarabia</span><span class="b">Roleplay</span></h1>
+          <p class="slogan">O LUME. POVESTEA TA.</p>
+
+          <div class="cta">
+            <div class="cta-idle">
+              <button class="play" id="play" autofocus><svg width="30" height="30"><use href="#i-play"/></svg>JOACĂ ACUM<span class="go">›</span></button>
+              <div class="stats">
+                <div class="stat"><svg><use href="#i-users"/></svg><div><b id="sPlayers">– / –</b><span>Jucători online</span></div></div>
+                <div class="stat"><i class="dot" id="sDot"></i><div><b id="sState">SE VERIFICĂ…</b><span id="sStateSub">Starea serverului</span></div></div>
+                <div class="stat"><svg><use href="#i-signal"/></svg><div><b id="sPing">Ping –</b><span id="sPingSub">Conexiune</span></div></div>
+              </div>
+            </div>
+
+            <div class="connect" id="connecting">
+              <h2>Se conectează la Basarabia RP</h2>
+              <p id="status">Se pregătește conexiunea…</p>
+              <div class="bar indeterminate" id="bar"><i></i></div>
+              <button class="btn" id="cancel">Anulează</button>
+            </div>
+
+            <div class="connect error" id="error">
+              <h2>Nu te-ai putut conecta</h2>
+              <p id="errorText"></p>
+              <button class="btn red" id="retry">Încearcă din nou</button>
+              <button class="btn" id="back">Înapoi</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="srv" aria-label="Server">
+          <header><svg><use href="#i-server"/></svg><b>BASARABIA RP - MAIN SERVER</b><span class="pill wait" id="pill">…</span></header>
+          <ul>
+            <li><svg><use href="#i-pin"/></svg>Moldova</li>
+            <li><svg><use href="#i-users"/></svg><span id="cPlayers">– jucători</span></li>
+            <li><svg><use href="#i-signal"/></svg><span id="cPing">Ping –</span></li>
+            <li><svg><use href="#i-discord"/></svg>Login cu Discord</li>
+          </ul>
         </div>
       </div>
 
-      <div class="connect" id="connecting">
-        <h2>Se conectează la Basarabia RP</h2>
-        <p id="status">Se pregătește conexiunea…</p>
-        <div class="bar indeterminate" id="bar"><i></i></div>
-        <button class="ghost" id="cancel">Anulează</button>
+      <div class="newshead">
+        <h3>Ultimele noutăți</h3>
+        <button class="link" data-view="news">Vezi toate știrile <svg><use href="#i-arrow"/></svg></button>
       </div>
-
-      <div class="connect error" id="error">
-        <h2>Nu te-ai putut conecta</h2>
-        <p id="errorText"></p>
-        <div class="row" style="margin-top:22px">
-          <button class="ghost" id="retry">Încearcă din nou</button>
-          <button class="ghost" id="quit2">Ieșire</button>
-        </div>
-      </div>
+      <div class="cards" id="cards"></div>
     </section>
 
-    <aside class="right">
-      <div class="news">
-        <h3>Noutăți</h3>
-        <div id="newsList"><p class="empty">Se încarcă…</p></div>
-      </div>
-    </aside>
-  </div>
+    <!-- STIRI -->
+    <section class="view page" id="v-news">
+      <h2>Știri</h2>
+      <p class="sub">Ce se întâmplă pe Basarabia RP</p>
+      <div class="scroll" id="posts"></div>
+    </section>
 
-  <div class="foot"><span>Basarabia Roleplay</span><span id="ver"></span></div>
+    <!-- SETARI -->
+    <section class="view page" id="v-settings">
+      <h2>Setări</h2>
+      <p class="sub">Basarabia RP Launcher</p>
+      <div class="box">
+        <div class="row"><div><b>Server</b><span class="mono" id="setServer"></span></div><button class="btn red" id="play2">Conectare</button></div>
+        <div class="row"><div><b>Comunitatea pe Discord</b><span>Anunțuri, suport și cereri de ajutor</span></div><button class="btn" id="discord"><svg width="18" height="18"><use href="#i-discord"/></svg>Discord</button></div>
+        <div class="row"><div><b>Setările jocului</b><span>Grafica, sunetul și tastele se schimbă din meniul de pauză al jocului (ESC → Setări).</span></div></div>
+        <div class="row"><div><b>Ieșire</b><span>Închide Basarabia RP</span></div><button class="btn" id="quit"><svg width="18" height="18"><use href="#i-exit"/></svg>Ieșire</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <svg><use href="#i-layers"/></svg><span class="name">Basarabia RP Launcher</span>
+    <span class="right"><i class="dot" id="fDot"></i><span id="fText">Se verifică serverul…</span></span>
+  </footer>
+</div>
 
 <script>
   // ---------------------------------------------------------------------------
@@ -124,12 +297,40 @@
     discord: "https://discord.gg/"   // linkul de invitatie al serverului
   };
 
+  // Noutati implicite (folosite daca news.json de pe site nu se poate citi).
+  // Format news.json: [{ "tag", "title", "text", "sign"?, "image"? }, ...]
+  var DEFAULT_NEWS = [
+    { tag: "Povestea noastră", title: "Cum s-a născut Basarabia RP",
+      text: "Basarabia RP a pornit de la trei prieteni care și-au dorit un server de roleplay al nostru, cu orașe, oameni și povești de acasă.\nDin multe nopți de lucru și discuții pe Discord a ieșit un loc unde fiecare jucător își scrie propria poveste. Construim orașul împreună cu voi și abia am început.",
+      sign: "Mihai, Keenzo și Turkanki, fondatorii Basarabia RP" },
+    { tag: "Open Beta", title: "Open Beta – Basarabia RP",
+      text: "Serverul se află în perioada de Open Beta. Intră, testează sistemele și spune-ne pe Discord ce merge bine și ce putem îmbunătăți." },
+    { tag: "În dezvoltare", title: "Noi sisteme în lucru",
+      text: "Lucrăm la sisteme noi pentru o experiență cât mai realistă. Mulțumim tuturor celor care ne susțin de la început!" }
+  ];
+  // imaginile cardurilor: bucati diferite din fundal, daca stirea nu are "image"
+  var CARD_BG = ["20% 92%", "55% 96%", "88% 92%"];
+
   var native = function (name, arg) {
     try { if (window.invokeNative) window.invokeNative(name, arg == null ? "" : arg); } catch (e) {}
   };
-
   var $ = function (id) { return document.getElementById(id); };
   var setState = function (s) { document.body.setAttribute("data-state", s); };
+  function esc(s) { var x = document.createElement("div"); x.textContent = String(s == null ? "" : s); return x.innerHTML; }
+
+  // ---------------------------------------------------------------------------
+  // Navigare
+  // ---------------------------------------------------------------------------
+  function show(view) {
+    ["home", "news", "settings"].forEach(function (v) { $("v-" + v).classList.toggle("on", v === view); });
+    document.querySelectorAll(".nav button").forEach(function (b) {
+      if (b.getAttribute("data-view") === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-view]");
+    if (t) { show(t.getAttribute("data-view")); }
+  });
 
   // ---------------------------------------------------------------------------
   // Traduceri pentru mesajele de conectare
@@ -153,21 +354,26 @@
   // Actiuni
   // ---------------------------------------------------------------------------
   function connect() {
+    show("home");
     setState("connecting");
     $("status").textContent = "Se conectează la server…";
     $("bar").classList.add("indeterminate");
     native("connectTo", JSON.stringify([BRP.server]));
   }
+  function idle() { setState("idle"); $("play").focus(); }
 
   $("play").addEventListener("click", connect);
+  $("play2").addEventListener("click", connect);
   $("retry").addEventListener("click", connect);
-  $("cancel").addEventListener("click", function () { native("cancelDefer"); setState("idle"); $("play").focus(); });
+  $("back").addEventListener("click", idle);
+  $("cancel").addEventListener("click", function () { native("cancelDefer"); idle(); });
   $("quit").addEventListener("click", function () { native("exit"); });
-  $("quit2").addEventListener("click", function () { native("exit"); });
+  $("close").addEventListener("click", function () { native("exit"); });
   $("discord").addEventListener("click", function () { native("openUrl", BRP.discord); });
+  $("setServer").textContent = BRP.server;
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && document.body.getAttribute("data-state") === "idle") connect();
+    if (e.key === "Enter" && document.body.getAttribute("data-state") === "idle" && $("v-home").classList.contains("on")) connect();
   });
 
   // ---------------------------------------------------------------------------
@@ -180,11 +386,10 @@
 
     switch (d.type) {
       case "connecting":
-        setState("connecting");
+        show("home"); setState("connecting");
         break;
-
       case "connectStatus":
-        setState("connecting");
+        show("home"); setState("connecting");
         var s = d.data || {};
         $("status").textContent = translate(s.message);
         if (s.total > 0 && s.count >= 0) {
@@ -195,43 +400,81 @@
         }
         $("cancel").style.display = s.cancelable === false ? "none" : "";
         break;
-
       case "connectFailed":
-        setState("error");
+        show("home"); setState("error");
         $("errorText").textContent = String(d.message || "Eroare necunoscută.");
         $("retry").focus();
         break;
-
       case "connectCard":
         setState("connecting");
         $("status").textContent = "Serverul cere o confirmare – urmează instrucțiunile din joc.";
         break;
-
       case "setWarningMessage":
-        if (d.message) { setState("error"); $("errorText").textContent = String(d.message); }
+        if (d.message) { show("home"); setState("error"); $("errorText").textContent = String(d.message); }
         break;
     }
   });
 
   // ---------------------------------------------------------------------------
-  // Noutati (fisier editabil pe site: news.json) si jucatori online
+  // Noutati (news.json pe site, editabil fara update la aplicatie)
   // ---------------------------------------------------------------------------
-  function esc(s) { var x = document.createElement("div"); x.textContent = String(s == null ? "" : s); return x.innerHTML; }
-
-  fetch(BRP.news, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (list) {
-    if (!Array.isArray(list) || !list.length) throw 0;
-    $("newsList").innerHTML = list.slice(0, 4).map(function (n) {
-      return "<article><time>" + esc(n.date) + "</time><h4>" + esc(n.title) + "</h4><p>" + esc(n.text) + "</p></article>";
+  function imgStyle(n, i) {
+    if (n.image && /^https:\/\//.test(n.image)) return "background-image:url('" + encodeURI(n.image).replace(/'/g, "%27") + "')";
+    return "background-image:linear-gradient(180deg,rgba(227,25,45,.18),rgba(0,0,0,.2)),url(static/media/32000f5a0b55eccb6d79bg2.jpg);background-size:cover,260%;background-position:center," + CARD_BG[i % CARD_BG.length];
+  }
+  function renderNews(list) {
+    $("cards").innerHTML = list.slice(0, 3).map(function (n, i) {
+      return '<button class="card" data-view="news"><div class="img" style="' + imgStyle(n, i) + '">' +
+        (n.tag ? '<span class="tag">' + esc(n.tag) + '</span>' : '') + '</div>' +
+        '<div class="body"><h4>' + esc(n.title) + '</h4><p>' + esc(n.text) + '</p>' +
+        (n.sign ? '<div class="sign">— ' + esc(n.sign) + '</div>' : '') +
+        '<span class="link">Citește mai mult <svg><use href="#i-arrow"/></svg></span></div></button>';
     }).join("");
-  }).catch(function () {
-    $("newsList").innerHTML = '<p class="empty">Noutățile nu sunt disponibile acum.</p>';
-  });
-
-  fetch("http://" + BRP.server + "/dynamic.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
-    if (typeof s.clients === "number") {
-      $("online").innerHTML = "<b>" + s.clients + "</b> / " + esc(s.sv_maxclients || "?") + " jucători online";
-    }
+    $("posts").innerHTML = list.map(function (n, i) {
+      return '<article class="post"><div class="img" style="' + imgStyle(n, i) + '">' +
+        (n.tag ? '<span class="tag">' + esc(n.tag) + '</span>' : '') + '</div>' +
+        '<div class="body"><h4>' + esc(n.title) + '</h4><p>' + esc(n.text) + '</p>' +
+        (n.sign ? '<p class="sign">— ' + esc(n.sign) + '</p>' : '') + '</div></article>';
+    }).join("");
+  }
+  renderNews(DEFAULT_NEWS);
+  fetch(BRP.news, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (list) {
+    if (Array.isArray(list) && list.length && list[0] && list[0].title) renderNews(list);
   }).catch(function () {});
+
+  // ---------------------------------------------------------------------------
+  // Starea serverului (jucatori, ping aproximativ prin HTTP)
+  // ---------------------------------------------------------------------------
+  function serverState(ok, clients, max, ping) {
+    $("sDot").className = "dot " + (ok ? "ok" : "bad");
+    $("fDot").className = "dot " + (ok ? "ok" : "bad");
+    $("sState").textContent = ok ? "SERVER ONLINE" : "SERVER OFFLINE";
+    $("sStateSub").textContent = ok ? "Conectează-te și intră în acțiune" : "Revino în câteva minute";
+    $("fText").textContent = ok ? "Serverul Basarabia RP este online" : "Serverul nu răspunde acum";
+    $("pill").className = "pill " + (ok ? "ok" : "bad");
+    $("pill").textContent = ok ? "ONLINE" : "OFFLINE";
+    if (ok) {
+      var pl = clients + " / " + (max || "?");
+      $("sPlayers").textContent = pl;
+      $("cPlayers").textContent = pl + " jucători";
+      $("sPing").textContent = "Ping " + ping + " ms";
+      $("cPing").textContent = "Ping " + ping + " ms";
+      $("sPingSub").textContent = ping < 60 ? "Conexiune excelentă" : ping < 120 ? "Conexiune bună" : "Conexiune slabă";
+    } else {
+      $("sPlayers").textContent = "– / –";
+      $("cPlayers").textContent = "– jucători";
+      $("sPing").textContent = "Ping –"; $("cPing").textContent = "Ping –";
+      $("sPingSub").textContent = "Fără conexiune";
+    }
+  }
+  function poll() {
+    var t0 = Date.now();
+    fetch("http://" + BRP.server + "/dynamic.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
+      serverState(true, typeof s.clients === "number" ? s.clients : 0, s.sv_maxclients, Math.max(1, Math.round((Date.now() - t0) / 2)));
+    }).catch(function () { serverState(false); });
+  }
+  poll();
+  setInterval(poll, 30000);
 
   // ---------------------------------------------------------------------------
   // Pornire: anuntam clientul ca meniul e incarcat (afiseaza fereastra jocului)
