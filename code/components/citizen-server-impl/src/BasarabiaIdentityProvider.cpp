@@ -9,7 +9,11 @@
  *    identificatorul `discord:<id>` (folosit de vRP 2 pentru a-i gasi contul).
  *
  * Format bilet:  base64url(json) "." hex(HMAC-SHA256(brp_authSecret, base64url(json)))
- *   json = { "v": 1, "d": "<discord id>", "u": "<nume>", "e": <expirare unix> }
+ *   json = { "v": 1, "d": "<discord id>", "u": "<nume>", "e": <expirare unix>,
+ *            "g": 1 daca licenta GTA V a fost verificata, "p": platforma, "sh": steam hex }
+ *
+ * `brp_requireOwnership true` -> se accepta doar bilete cu licenta GTA V verificata
+ * (verificarea o face resursa brp_auth, fara Cfx: Steam acum; Rockstar/Epic cu acces oficial).
  */
 
 #include "StdInc.h"
@@ -27,6 +31,7 @@
 using json = nlohmann::json;
 
 std::shared_ptr<ConVar<std::string>> g_brpAuthSecret;
+std::shared_ptr<ConVar<bool>> g_brpRequireOwnership;
 
 namespace
 {
@@ -63,6 +68,31 @@ namespace
 		return s;
 	}
 
+	bool IsHex(const std::string& s)
+	{
+		if (s.empty() || s.size() > 20)
+		{
+			return false;
+		}
+
+		for (char c : s)
+		{
+			if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	struct BrpTicketInfo
+	{
+		std::string discordId;
+		bool ownershipVerified = false;
+		std::string steamHex;
+	};
+
 	bool IsDigits(const std::string& s)
 	{
 		if (s.empty() || s.size() > 24)
@@ -81,8 +111,8 @@ namespace
 		return true;
 	}
 
-	// Returneaza ID-ul de Discord daca biletul e valid; altfel mesajul de eroare in `error`.
-	boost::optional<std::string> VerifyBrpTicket(const std::string& secret, const std::string& ticket, std::string& error)
+	// Returneaza datele biletului daca e valid; altfel mesajul de eroare in `error`.
+	boost::optional<BrpTicketInfo> VerifyBrpTicket(const std::string& secret, const std::string& ticket, std::string& error)
 	{
 		auto dot = ticket.find('.');
 
@@ -146,7 +176,17 @@ namespace
 				return {};
 			}
 
-			return discordId;
+			BrpTicketInfo info;
+			info.discordId = discordId;
+			info.ownershipVerified = payload.value("g", 0) == 1;
+
+			const std::string steamHex = payload.value("sh", "");
+			if (IsHex(steamHex))
+			{
+				info.steamHex = steamHex;
+			}
+
+			return info;
 		}
 		catch (const std::exception&)
 		{
@@ -195,15 +235,27 @@ static InitFunction initFunction([]()
 			}
 
 			std::string error;
-			auto discordId = VerifyBrpTicket(secret, it->second, error);
+			auto info = VerifyBrpTicket(secret, it->second, error);
 
-			if (!discordId)
+			if (!info)
 			{
 				cb(error);
 				return;
 			}
 
-			clientPtr->AddIdentifier(fmt::sprintf("discord:%s", *discordId));
+			if (g_brpRequireOwnership && g_brpRequireOwnership->GetValue() && !info->ownershipVerified)
+			{
+				cb(std::string{ "Basarabia RP: licența GTA V nu a fost verificată. Repornește aplicația și confirmă GTA V la login (biletul trebuie reînnoit)." });
+				return;
+			}
+
+			clientPtr->AddIdentifier(fmt::sprintf("discord:%s", info->discordId));
+
+			if (!info->steamHex.empty())
+			{
+				clientPtr->AddIdentifier(fmt::sprintf("steam:%s", info->steamHex));
+			}
+
 			cb({});
 		}
 	} idp;
@@ -212,6 +264,7 @@ static InitFunction initFunction([]()
 	{
 		// NU are ConVar_ServerInfo: secretul nu trebuie sa fie public.
 		g_brpAuthSecret = instance->AddVariable<std::string>("brp_authSecret", ConVar_None, "");
+		g_brpRequireOwnership = instance->AddVariable<bool>("brp_requireOwnership", ConVar_None, false);
 	});
 
 	fx::RegisterServerIdentityProvider(&idp);

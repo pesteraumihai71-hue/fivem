@@ -45,7 +45,13 @@ set brp_authSecret "PUNETI-AICI-UN-SECRET-LUNG-ALEATOR-DE-MINIM-32-CARACTERE"
 set brp_discordClientId "CLIENT_ID_DISCORD"
 set brp_discordClientSecret "CLIENT_SECRET_DISCORD"
 set brp_auth_redirectUri "https://pesteraumihai71-hue.github.io/fivem/auth/"
+set brp_auth_publicUrl "http://IP-UL-SERVERULUI:30120"
 set brp_auth_ticketDays 30
+
+# --- verificarea licentei GTA V (fara Cfx) ---
+set brp_ownership "steam,rockstar,epic"   # Steam activ; Rockstar/Epic apar „în curând”
+set brp_steamApiKey "CHEIE_STEAM_WEB_API"  # https://steamcommunity.com/dev/apikey
+set brp_requireOwnership false             # true = intră doar cine are licența verificată
 
 ensure brp_auth
 ensure vrp
@@ -54,6 +60,13 @@ ensure brp_identity_sync
 - `brp_authSecret`: generați unul, de ex. pe Linux `openssl rand -hex 32`. **Nu-l publicați.**
   Dacă îl schimbați, toți jucătorii trebuie să se logheze din nou (automat).
 - **Nu** mai e nevoie de `sv_licenseKey`.
+
+### Verificarea licenței GTA V
+- **Steam**: API-ul oficial Steam. Jucătorul se loghează cu Steam; profilul trebuie să aibă
+  „Game details: Public”. Merge pentru GTA V Legacy (271590) și Enhanced (3240220).
+- **Rockstar Games Launcher / Epic**: sloturi pregătite în `brp_auth`; se activează când
+  Rockstar/Epic oferă acces oficial de verificare a licenței.
+- Cu `brp_requireOwnership true`, serverul acceptă doar bilete cu licența verificată.
 
 ## 4. Cum intră un jucător
 1. Pornește Basarabia RP → se deschide browserul „Login cu Discord”.
