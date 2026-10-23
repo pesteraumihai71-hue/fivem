@@ -46,17 +46,29 @@ jobs:
         working-directory: src
         run: docker build -t brp-server-builder -f code/tools/ci/docker-builder/Dockerfile .
 
+      - name: Node 12 (musl) pentru generarea nativelor
+        run: |
+          mkdir -p /tmp/brp-node
+          for u in \
+            https://unofficial-builds.nodejs.org/download/release/v12.22.12/node-v12.22.12-linux-x64-musl.tar.gz \
+            https://content.cfx.re/mirrors/vendor/node/v12.22.12/node-v12.22.12-linux-x64-musl.tar.gz; do
+            curl -fL --retry 5 --retry-delay 5 -o /tmp/brp-node/node.tar.gz "$u" && break
+          done
+          ls -la /tmp/brp-node
+
       - name: Build server (durează)
         working-directory: src
         run: |
           set -o pipefail
           report_failure() {
-            tail -n 80 /tmp/build.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}' > /tmp/tail.txt
-            echo "::error title=Build server esuat (ultimele 80 de linii)::$(cat /tmp/tail.txt)"
+            enc() { sed -e 's/%/%25/g' | cut -c1-300 | awk 'BEGIN{ORS="%0A"} {print}'; }
+            echo "::error title=Build server - linii cu erori::$(grep -nE '(error|Error|ERR!|FAILED|failed|No such file|not found)' /tmp/build.log | grep -v 'Werror' | tail -n 30 | enc)"
+            echo "::error title=Build server - ultimele 30 de linii::$(tail -n 30 /tmp/build.log | enc)"
             exit 1
           }
           docker run --rm \
             -v "$PWD:/workspace" -w /workspace \
+            -v /tmp/brp-node:/tmp/node \
             -e JOB_SLOTS=$(nproc) \
             -e CI_PIPELINE_ID=${{ github.run_number }} \
             brp-server-builder sh -exc '
@@ -80,6 +92,14 @@ jobs:
               chown $(stat -c %u .):$(stat -c %g .) basarabia-server-linux.tar.xz
             ' 2>&1 | tee /tmp/build.log || report_failure
           ls -la basarabia-server-linux.tar.xz
+
+      - name: Log build (la eroare)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: /tmp/build.log
+          retention-days: 7
 
       - name: Upload (Artifacts)
         uses: actions/upload-artifact@v4
