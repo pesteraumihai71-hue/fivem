@@ -679,7 +679,7 @@ static void GatherCrashInformation()
 			OleFlushClipboard();
 
 			// open message box
-			MessageBoxW(NULL, va(L"Saved the crash dump as %s. Please upload the .zip file when you're asking for support. (copy/paste to upload)", tempDir), L"CitizenFX", MB_OK | MB_ICONINFORMATION);
+			MessageBoxW(NULL, va(L"Saved the crash dump as %s. Please upload the .zip file when you're asking for support. (copy/paste to upload)", tempDir), PRODUCT_NAME, MB_OK | MB_ICONINFORMATION);
 
 			// open Explorer with the file selected
 			STARTUPINFOW si = { 0 };
@@ -1420,7 +1420,7 @@ void InitializeDumpServer(int inheritedHandle, int parentPid)
 					{
 						windowTitle = PRODUCT_NAME L" encountered an error";
 						mainInstruction = L"Game integrity check failed";
-						content = L"A " PRODUCT_NAME L" integrity check failed and the game had to be terminated.\nThis may be caused by recent changes made to your computer, please read this <A HREF=\"https://aka.cfx.re/integrity-check-failed\">support article</A> for more information.";
+						content = L"A " PRODUCT_NAME L" integrity check failed and the game had to be terminated.\nThis may be caused by recent changes made to your computer, please contact Basarabia RP support on Discord.";
 					}
 
 					if (g_extraExceptionInfo)
@@ -1693,7 +1693,10 @@ void InitializeDumpServer(int inheritedHandle, int parentPid)
 				parameters[L"Fatal"] = (shouldTerminate) ? L"true" : L"false";
 
 				// upload the actual minidump file as well
+// Basarabia RP: rapoartele de crash NU se mai trimit la Cfx.re (raman local, "Save information").
+#ifndef GTA_FIVE
 #define CFX_CRASH_INGRESS_URL "https://crash-ingress.fivem.net"
+#endif
 #if defined(CFX_CRASH_INGRESS_URL) && (defined(GTA_FIVE) || defined(IS_RDR3))
 				if (uploadCrashes && shouldUpload && HTTPUpload::SendMultipartPostRequest(va(L"%s/post", ToWide(CFX_CRASH_INGRESS_URL)), parameters, files, &timeout, &responseBody, &responseCode))
 				{
