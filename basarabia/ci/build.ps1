@@ -80,6 +80,21 @@ try {
         Copy-Item -Force -Recurse "$root\data\client\*"     "$app\"
         Copy-Item -Force -Recurse "$root\data\redist\crt\*" "$app\bin\"
 
+        # Runtime-ul C++ trebuie să fie cel puțin la fel de nou ca toolset-ul
+        # cu care am compilat. data\redist\crt are msvcp140 14.34, dar mașina de
+        # build compilează cu VS 2022 17.10+ (14.4x) -> crash în msvcp140.dll
+        # (std::mutex). Suprascriem cu runtime-ul din Visual Studio-ul folosit.
+        $redistRoot = Join-Path $ctx.VSDir "VC\Redist\MSVC"
+        $crtDir = Get-ChildItem $redistRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '^\d+\.\d+\.\d+$' } |
+            Sort-Object { [version]$_.Name } -Descending |
+            ForEach-Object { Get-ChildItem (Join-Path $_.FullName "x64") -Directory -Filter "Microsoft.VC*.CRT" -ErrorAction SilentlyContinue } |
+            Select-Object -First 1
+        if (-not $crtDir) { throw "Nu găsesc runtime-ul C++ (VC\Redist\MSVC\*\x64\Microsoft.VC*.CRT) în $($ctx.VSDir)" }
+        Copy-Item -Force "$($crtDir.FullName)\*.dll" "$app\bin\"
+        $ver = (Get-Item "$app\bin\msvcp140.dll").VersionInfo.FileVersion
+        Write-Host "Runtime C++ din $($crtDir.FullName) -> msvcp140.dll $ver"
+
         # Rezultatul compilării
         Copy-Item -Force "$binRoot\*.dll"                      "$app\"
         Copy-Item -Force "$binRoot\*.com"                      "$app\"

@@ -76,18 +76,64 @@ Type: filesandordirs; Name: "{app}\{#AppName}.app\logs"
 Type: filesandordirs; Name: "{app}\{#AppName}.app\crashes"
 
 [Code]
-// Verifică dacă GTA V (Legacy) e instalat; dacă nu, avertizează jucătorul.
-function GtaFound(): Boolean;
+// Caută GTA V (Legacy sau Enhanced) în toate locurile cunoscute.
+function HasGtaExe(Dir: String): Boolean;
+begin
+  Result := False;
+  if Dir = '' then Exit;
+  Dir := RemoveBackslashUnlessRoot(Dir);
+  Result := FileExists(Dir + '\GTA5.exe') or FileExists(Dir + '\GTA5_Enhanced.exe') or
+            FileExists(ExtractFileDir(Dir) + '\GTA5.exe') or FileExists(ExtractFileDir(Dir) + '\GTA5_Enhanced.exe') or
+            FileExists(Dir + '\GTAV\GTA5.exe');
+end;
+
+function RegDir(Root: Integer; Key, Value: String): Boolean;
 var
   P: String;
 begin
-  Result := False;
-  if RegQueryStringValue(HKLM64, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V', 'InstallFolder', P) then
-    Result := FileExists(AddBackslash(P) + 'GTA5.exe');
-  if (not Result) and RegQueryStringValue(HKLM64, 'SOFTWARE\WOW6432Node\Rockstar Games\GTAV', 'InstallFolderSteam', P) then
-    Result := FileExists(AddBackslash(P) + 'GTA5.exe') or FileExists(AddBackslash(P) + 'GTAV\GTA5.exe');
-  if (not Result) and RegQueryStringValue(HKLM64, 'SOFTWARE\WOW6432Node\Rockstar Games\GTAV', 'InstallFolderEpic', P) then
-    Result := FileExists(AddBackslash(P) + 'GTA5.exe');
+  Result := RegQueryStringValue(Root, Key, Value, P) and HasGtaExe(P);
+end;
+
+function CheckRoot(Root: Integer): Boolean;
+begin
+  Result :=
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V', 'InstallFolder') or
+    RegDir(Root, 'SOFTWARE\Rockstar Games\Grand Theft Auto V', 'InstallFolder') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V Enhanced', 'InstallFolder') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\GTAV', 'InstallFolderSteam') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\GTAV', 'InstallFolderEpic') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\GTA V Enhanced', 'InstallFolderSteam') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\GTA V Enhanced', 'InstallFolderEpic') or
+    RegDir(Root, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 271590', 'InstallLocation') or
+    RegDir(Root, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 3240220', 'InstallLocation') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 271590', 'InstallLocation') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 3240220', 'InstallLocation');
+end;
+
+function GtaFound(): Boolean;
+var
+  Drives: String;
+  I: Integer;
+  D: String;
+begin
+  Result := CheckRoot(HKLM64) or CheckRoot(HKLM32) or CheckRoot(HKCU);
+  if Result then Exit;
+  // Locuri obișnuite pe fiecare disc (C: ... H:)
+  Drives := 'CDEFGH';
+  for I := 1 to Length(Drives) do
+  begin
+    D := Drives[I] + ':';
+    if HasGtaExe(D + '\Program Files\Rockstar Games\Grand Theft Auto V') or
+       HasGtaExe(D + '\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V') or
+       HasGtaExe(D + '\SteamLibrary\steamapps\common\Grand Theft Auto V') or
+       HasGtaExe(D + '\Program Files\Epic Games\GTAV') or
+       HasGtaExe(D + '\Epic Games\GTAV') or
+       HasGtaExe(D + '\Games\Grand Theft Auto V') then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
 end;
 
 function InitializeSetup(): Boolean;
@@ -95,9 +141,9 @@ begin
   Result := True;
   if not GtaFound() then
   begin
-    if MsgBox('Nu am găsit Grand Theft Auto V pe acest calculator.' + #13#10 + #13#10 +
-              'Basarabia RP are nevoie de GTA V (Steam, Epic Games sau Rockstar Games Launcher).' + #13#10 +
-              'Puteți instala acum și alege folderul jocului la prima pornire.' + #13#10 + #13#10 +
+    if MsgBox('Nu am găsit automat Grand Theft Auto V pe acest calculator.' + #13#10 +
+              'Dacă îl ai instalat, apasă Da: la prima pornire vei alege folderul jocului.' + #13#10 + #13#10 +
+              'Basarabia RP are nevoie de GTA V (Steam, Epic Games sau Rockstar Games Launcher).' + #13#10 + #13#10 +
               'Continuați instalarea?', mbConfirmation, MB_YESNO) = IDNO then
       Result := False;
   end;

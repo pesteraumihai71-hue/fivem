@@ -146,7 +146,13 @@ jobs:
             choco install innosetup -y --no-progress
             $env:Path += ";${env:ProgramFiles(x86)}\Inno Setup 6"
           }
-          iscc /DAppVersion=${{ inputs.version }} basarabia\installer.iss
+          $out = iscc /DAppVersion=${{ inputs.version }} basarabia\installer.iss 2>&1
+          $out | Write-Output
+          if ($LASTEXITCODE -ne 0) {
+            $tail = (($out | Select-Object -Last 40) -join "`n").Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
+            Write-Output "::error title=Installer esuat::$tail"
+            exit 1
+          }
 
       - name: Upload installer
         uses: actions/upload-artifact@v4

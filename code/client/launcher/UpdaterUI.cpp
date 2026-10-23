@@ -141,17 +141,22 @@ HFONT UI_CreateScaledFont(int cHeight, int cWidth, int cEscapement, int cOrienta
 	return CreateFontIndirect(&logFont);
 }
 
+#if defined(GTA_FIVE)
+auto theme_Bg = 0x0F1219; // Basarabia RP
+#else
 auto theme_Bg = 0x202020;
+#endif
 auto theme_TitleFg = 0xABABAB;
 auto theme_SubtitleFg = 0xABABAB;
 auto theme_ProgressBg = 0x090A09;
 #if defined(GTA_FIVE)
-auto theme_ProgressFg = 0x66AD43;
+// Basarabia RP: logo-ul "B" (vectorizat din logo-ul oficial) si culorile brandului
+auto theme_ProgressFg = 0xE3192D;
 auto theme_Icon = LR"(
-<Viewbox Height="150" Margin="0,0,0,60" VerticalAlignment="Center" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+<Viewbox Height="150" Margin="0,0,0,60" VerticalAlignment="Center" HorizontalAlignment="Center">
 	<Path
-		Data="M37.97 86.09L108.57 15.84L113.3 30.07L28.37 114.9L37.97 86.09ZM106.1 8.42L103.3 0H71.84C68.74 0 66 1.97 65.03 4.91L42.9 71.31L106.1 8.42ZM18.48 144.56L0 200H40.41L73.07 90.04L18.48 144.56ZM118.25 44.92L91.49 71.65L129.41 200H169.85L118.25 44.92Z" Stretch="Fill"
-		Fill="#66AD43"
+		Data="F0 M0,0L0,2 69,69 68,76 64,84 64,87 43,141 42,147 40,150 34,170 32,173 29,184 27,187 27,190 25,193 8,242 304,242 310,236 317,225 322,209 322,191 315,167 304,149 293,138 277,127 254,117 280,97 288,87 292,77 292,66 289,55 283,43 276,33 264,21 247,12 222,7 200,7 199,8 184,8 174,10 133,12 132,13 122,13 121,14 75,16 38,7ZM105,215L108,203 108,198 112,185 116,160 119,155 208,154 220,162 232,175 228,178 203,188 202,187 201,173 198,170 195,169 188,170 186,173 186,178 185,179 185,195 183,196 182,192 179,190 179,184 176,176 174,176 170,180 169,195 166,198 165,197 165,162 164,159 162,159 154,166 153,176 147,180 147,204 145,206 140,203 140,190 137,187 131,186 124,189 123,208 122,209 120,208 115,209 115,215 113,217ZM205,79L204,85 201,89 127,127 124,126 133,100 140,84 140,81 145,70 147,68 147,64 143,59 144,58 183,57Z"
+		Fill="#E3192D"
 	>
 	</Path>
 </Viewbox>
