@@ -21,7 +21,7 @@
 //    Acceptă "ip:port" (ex. "123.45.67.89:30120") sau "cfx.re/join/abc123".
 //    Lăsat gol ("") => clientul pornește în meniu, fără conectare automată.
 // ---------------------------------------------------------------------------
-#define BRP_SERVER_ADDRESS  "SCHIMBA-MA:30120"
+#define BRP_SERVER_ADDRESS  "134.255.225.49:30178"
 
 // ---------------------------------------------------------------------------
 // 3. Protocolul de link pentru site/Discord: basarabiarp://connect/ip:port
