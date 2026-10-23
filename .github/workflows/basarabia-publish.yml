@@ -1,0 +1,50 @@
+# ============================================================================
+#  Basarabia RP - publică un installer deja compilat (fără rebuild)
+#
+#  Ia BasarabiaRP-Setup.exe dintr-o rulare reușită a "Build client" și îl
+#  publică la linkul fix folosit de site:
+#    releases/latest/download/BasarabiaRP-Setup.exe
+# ============================================================================
+
+name: Basarabia RP - Publicare installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "ID-ul rulării Build client (din URL-ul rulării)"
+        required: true
+      version:
+        description: "Versiunea installerului din acea rulare (ex. 1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descarcă installerul din build
+        uses: actions/download-artifact@v4
+        with:
+          name: BasarabiaRP-Setup-${{ inputs.version }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: out
+
+      - name: Publică (Release)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          ls -la out
+          test -f out/BasarabiaRP-Setup.exe
+          sha256sum out/BasarabiaRP-Setup.exe | tee out/SHA256.txt
+          tag="v${{ inputs.version }}"
+          gh release delete "$tag" -R "${{ github.repository }}" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$tag" out/BasarabiaRP-Setup.exe \
+            -R "${{ github.repository }}" --latest \
+            --title "Basarabia RP $tag" \
+            --notes "Installer Basarabia Roleplay $tag. Necesită GTA V instalat (Windows 10/11, 64 biți)."
