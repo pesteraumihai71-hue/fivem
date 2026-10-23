@@ -50,9 +50,24 @@
   /* ---------- zona principala ---------- */
   .main{position:relative;overflow:hidden;background:url(static/media/32000f5a0b55eccb6d79bg2.jpg) center 70%/cover no-repeat,var(--night)}
   /* fotografie: Parlamentul noaptea, in dreapta, topita in fundal */
-  .main::after{content:"";position:absolute;top:0;right:0;width:72%;height:78%;background:url(static/media/parlament-noapte.jpg) 60% 40%/cover no-repeat;
-               filter:saturate(1.05) brightness(.8);opacity:.9;pointer-events:none;
-               -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 38%),linear-gradient(180deg,#000 55%,transparent 100%);-webkit-mask-composite:source-in;mask-composite:intersect}
+  .photo{position:absolute!important;z-index:0!important;top:0;right:0;width:72%;height:80%;overflow:hidden;pointer-events:none;
+         -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 38%),linear-gradient(180deg,#000 55%,transparent 100%);-webkit-mask-composite:source-in;mask-composite:intersect;
+         animation:photoIn 1.6s ease-out both}
+  .photo i{position:absolute;inset:-4%;background:url(static/media/parlament-noapte.jpg) 60% 40%/cover no-repeat;filter:saturate(1.08) brightness(.82);
+           animation:kenburns 38s ease-in-out infinite alternate;will-change:transform}
+  .photo b{position:absolute;inset:0;background:radial-gradient(40% 30% at 62% 38%,rgba(255,170,90,.18),transparent 70%);mix-blend-mode:screen;animation:breathe 7s ease-in-out infinite}
+  @keyframes kenburns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.12) translate(-2.5%,1.5%)}}
+  @keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
+  @keyframes photoIn{from{opacity:0;transform:scale(1.04)}to{opacity:.92;transform:none}}
+  /* granulatie fina de film: ascunde marirea pozei */
+  .grain{position:absolute!important;inset:-50%;z-index:0!important;pointer-events:none;opacity:.07;
+         background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+         animation:grain 1s steps(6) infinite}
+  @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+  /* scantei care urca */
+  .embers{position:absolute!important;inset:0;z-index:0!important;pointer-events:none;overflow:hidden}
+  .embers span{position:absolute;bottom:-20px;border-radius:50%;background:radial-gradient(circle,#ffb3a0 0%,#ff3346 45%,transparent 70%);opacity:0;animation:rise linear infinite}
+  @keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:.85}80%{opacity:.5}100%{transform:translate(var(--dx),-105vh);opacity:0}}
   .main>*{position:relative;z-index:1}
   .main>.view{position:absolute}
   .main>.close{position:absolute;z-index:5}
@@ -61,7 +76,13 @@
       linear-gradient(90deg,rgba(8,9,12,.82) 0%,rgba(8,9,12,.35) 55%,rgba(8,9,12,.55) 100%),
       linear-gradient(180deg,rgba(8,9,12,0) 45%,rgba(8,9,12,.92) 100%);pointer-events:none}
   .view{position:absolute;inset:0;padding:clamp(28px,6vh,72px) clamp(28px,3.4vw,64px) 24px;display:none;flex-direction:column}
-  .view.on{display:flex}
+  .view.on{display:flex;animation:viewIn .45s ease-out both}
+  @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  /* intrare in scena, pe rand */
+  .rv{animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .title .b{animation:slideIn .9s cubic-bezier(.2,.7,.2,1) .25s both}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-40px) skewX(-8deg)}to{opacity:1;transform:skewX(-8deg)}}
   .close{position:absolute;top:10px;right:12px;z-index:5;width:44px;height:36px;display:grid;place-items:center;color:#9aa0aa;border-radius:4px}
   .close:hover{background:var(--red);color:#fff}
 
@@ -78,7 +99,14 @@
   .cta{margin-top:clamp(18px,3.4vh,34px);max-width:560px}
   .play{display:flex;align-items:center;gap:22px;width:100%;padding:0 30px;height:clamp(62px,7.2vh,80px);border-radius:6px;
         background:linear-gradient(180deg,#f0283b 0%,#c8101f 100%);color:#fff;font:800 clamp(26px,2vw,36px)/1 var(--display);letter-spacing:.06em;
-        box-shadow:0 0 0 1px rgba(255,120,130,.35) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 16px 44px rgba(227,25,45,.45);transition:filter .15s,transform .1s}
+        box-shadow:0 0 0 1px rgba(255,120,130,.35) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 16px 44px rgba(227,25,45,.45);transition:filter .15s,transform .1s;
+        position:relative;overflow:hidden;animation:glow 3.2s ease-in-out infinite}
+  .play::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:28%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:shine 5s ease-in-out 1.5s infinite}
+  .play svg,.play .go{transition:transform .2s}
+  .play:hover .go{transform:translateX(6px)}
+  .play:hover svg{transform:scale(1.12)}
+  @keyframes shine{0%{left:-40%}25%,100%{left:130%}}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 1px rgba(255,120,130,.35) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 14px 36px rgba(227,25,45,.35)}50%{box-shadow:0 0 0 1px rgba(255,120,130,.5) inset,0 -4px 0 rgba(0,0,0,.25) inset,0 18px 60px rgba(227,25,45,.7)}}
   .play:hover{filter:brightness(1.1)}
   .play:focus-visible{outline:2px solid rgba(255,140,150,.7);outline-offset:3px}
   .play:active{transform:translateY(1px)}
@@ -92,7 +120,8 @@
   .stat b{display:block;font:700 clamp(17px,1.25vw,23px)/1.2 var(--display);color:var(--white)}
   .stat span{display:block;color:var(--text);font-size:clamp(13px,.85vw,15px)}
   .dot{width:16px;height:16px;border-radius:50%;background:#6b7280;flex:none}
-  .dot.ok{background:var(--green);box-shadow:0 0 12px rgba(34,197,94,.8)}
+  .dot.ok{background:var(--green);box-shadow:0 0 12px rgba(34,197,94,.8);animation:pulse 2s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
   .dot.bad{background:var(--red);box-shadow:0 0 12px rgba(227,25,45,.8)}
 
   /* conectare / eroare (inlocuiesc butonul) */
@@ -135,7 +164,12 @@
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.4vw,24px)}
   .card{display:flex;flex-direction:column;background:rgba(18,19,24,.92);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-align:left;transition:border-color .15s,transform .15s}
   .card:hover{border-color:rgba(227,25,45,.55);transform:translateY(-2px)}
-  .card .img{position:relative;height:clamp(84px,12vh,130px);background-size:cover;background-position:center;border-bottom:1px solid var(--line)}
+  .card .img{position:relative;overflow:hidden;height:clamp(84px,12vh,130px);border-bottom:1px solid var(--line)}
+  .img i{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .4s}
+  .card:hover .img i{transform:scale(1.09);filter:brightness(1.12)}
+  .card{animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) both}
+  .card:nth-child(1){animation-delay:.55s}.card:nth-child(2){animation-delay:.7s}.card:nth-child(3){animation-delay:.85s}
+  .card .link svg{transition:transform .2s}.card:hover .link svg{transform:translateX(5px)}
   .card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,11,15,.6))}
   .tag{position:absolute;left:14px;top:14px;z-index:1;padding:4px 10px;border-radius:4px;background:var(--red);color:#fff;font:700 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
   .card .body{padding:14px 18px 16px;display:flex;flex-direction:column;flex:1}
@@ -150,7 +184,8 @@
   .scroll{flex:1;min-height:0;overflow:auto;padding-right:8px}
   .scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
   .post{display:grid;grid-template-columns:clamp(180px,18vw,300px) 1fr;background:rgba(18,19,24,.92);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:18px;max-width:1100px}
-  .post .img{position:relative;min-height:170px;background-size:cover;background-position:center}
+  .post .img{position:relative;overflow:hidden;min-height:170px}
+  .post:hover .img i{transform:scale(1.06)}
   .post .body{padding:20px 26px}
   .post h4{margin:0 0 8px;font:700 22px/1.25 var(--display);color:var(--white)}
   .post p{margin:0 0 8px;white-space:pre-line;user-select:text}
@@ -179,7 +214,7 @@
     .slogan{margin-top:12px}.cta{margin-top:16px}.play{height:58px}.stats{margin-top:12px}
     .hero{padding-bottom:16px}.cards .card p{-webkit-line-clamp:2}.card .img{height:64px}.card .body{padding:10px 16px 12px}
   }
-  @media (prefers-reduced-motion:reduce){.bar.indeterminate i{animation:none;width:100%}*{transition:none!important}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.embers{display:none}}
 </style>
 </head>
 <body data-state="idle">
@@ -215,16 +250,19 @@
 
   <!-- ====================== continut ====================== -->
   <main class="main">
+    <div class="photo" aria-hidden="true"><i></i><b></b></div>
+    <div class="embers" id="embers" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
     <button class="close" id="close" title="Ieșire"><svg width="20" height="20"><use href="#i-x"/></svg></button>
 
     <!-- ACASA -->
     <section class="view on" id="v-home">
       <div class="hero">
         <div>
-          <h1 class="title"><span class="a">Basarabia</span><span class="b">Roleplay</span></h1>
-          <p class="slogan">O LUME. POVESTEA TA.</p>
+          <h1 class="title rv"><span class="a">Basarabia</span><span class="b">Roleplay</span></h1>
+          <p class="slogan rv" style="--d:.35s">O LUME. POVESTEA TA.</p>
 
-          <div class="cta">
+          <div class="cta rv" style="--d:.45s">
             <div class="cta-idle">
               <button class="play" id="play" autofocus><svg width="30" height="30"><use href="#i-play"/></svg>JOACĂ ACUM<span class="go">›</span></button>
               <div class="stats">
@@ -250,7 +288,7 @@
           </div>
         </div>
 
-        <div class="srv" aria-label="Server">
+        <div class="srv rv" style="--d:.6s" aria-label="Server">
           <header><svg><use href="#i-server"/></svg><b>BASARABIA RP - MAIN SERVER</b><span class="pill wait" id="pill">…</span></header>
           <ul>
             <li><svg><use href="#i-pin"/></svg>Moldova</li>
@@ -261,7 +299,7 @@
         </div>
       </div>
 
-      <div class="newshead">
+      <div class="newshead rv" style="--d:.5s">
         <h3>Ultimele noutăți</h3>
         <button class="link" data-view="news">Vezi toate știrile <svg><use href="#i-arrow"/></svg></button>
       </div>
@@ -433,14 +471,14 @@
   }
   function renderNews(list) {
     $("cards").innerHTML = list.slice(0, 3).map(function (n, i) {
-      return '<button class="card" data-view="news"><div class="img" style="' + imgStyle(n, i) + '">' +
+      return '<button class="card" data-view="news"><div class="img"><i style="' + imgStyle(n, i) + '"></i>' +
         (n.tag ? '<span class="tag">' + esc(n.tag) + '</span>' : '') + '</div>' +
         '<div class="body"><h4>' + esc(n.title) + '</h4><p>' + esc(n.text) + '</p>' +
         (n.sign ? '<div class="sign">— ' + esc(n.sign) + '</div>' : '') +
         '<span class="link">Citește mai mult <svg><use href="#i-arrow"/></svg></span></div></button>';
     }).join("");
     $("posts").innerHTML = list.map(function (n, i) {
-      return '<article class="post"><div class="img" style="' + imgStyle(n, i) + '">' +
+      return '<article class="post"><div class="img"><i style="' + imgStyle(n, i) + '"></i>' +
         (n.tag ? '<span class="tag">' + esc(n.tag) + '</span>' : '') + '</div>' +
         '<div class="body"><h4>' + esc(n.title) + '</h4><p>' + esc(n.text) + '</p>' +
         (n.sign ? '<p class="sign">— ' + esc(n.sign) + '</p>' : '') + '</div></article>';
@@ -488,6 +526,18 @@
   // ---------------------------------------------------------------------------
   // Pornire: anuntam clientul ca meniul e incarcat (afiseaza fereastra jocului)
   // ---------------------------------------------------------------------------
+  // scantei (putine, ca sa nu incarce jocul)
+  (function () {
+    var box = $("embers"), html = "";
+    for (var k = 0; k < 22; k++) {
+      var sz = (2 + Math.random() * 4).toFixed(1);
+      html += '<span style="left:' + (8 + Math.random() * 92).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;' +
+        '--dx:' + (Math.random() * 120 - 60).toFixed(0) + 'px;animation-duration:' + (11 + Math.random() * 14).toFixed(1) + 's;' +
+        'animation-delay:-' + (Math.random() * 20).toFixed(1) + 's"></span>';
+    }
+    box.innerHTML = html;
+  })();
+
   native("getMinModeInfo");
 </script>
 </body>
