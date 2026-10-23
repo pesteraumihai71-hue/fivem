@@ -58,14 +58,10 @@ if exist %~dp0\data_big.zip (
     del %~dp0\data_big.zip
 )
 
-:: download UI bundles
-echo Downloading UI bundle...
-curl.exe -k --fail-with-body -z%UI_BUNDLE% -L -o%UI_BUNDLE% %UI_URL% || exit /b !ERRORLEVEL!
-echo Downloading UI big bundle...
-curl.exe -k --fail-with-body -z%UI_BIG_BUNDLE% -L -o%UI_BIG_BUNDLE% %UI_BIG_URL% || exit /b !ERRORLEVEL!
-
-copy /y %~dp0\%UI_BUNDLE% %~dp0\data.zip || exit /b !ERRORLEVEL!
-copy /y %~dp0\%UI_BIG_BUNDLE% %~dp0\data_big.zip || exit /b !ERRORLEVEL!
+:: Basarabia RP: meniul principal propriu (brp-app) in locul interfetei
+:: Cfx (cfx-ui), care se descarca de pe serverele Cfx. Nu mai descarcam nimic.
+echo Copying Basarabia RP menu...
+xcopy /y /e /i %~dp0\brp-app %~dp0\data\app\ || exit /b !ERRORLEVEL!
 
 %~dp0\..\..\code\tools\ci\7z u -mx=0 %~dp0\data.zip %~dp0\data\* || exit /b !ERRORLEVEL!
 %~dp0\..\..\code\tools\ci\7z u -mx=0 %~dp0\data_big.zip %~dp0\data_big\* || exit /b !ERRORLEVEL!
