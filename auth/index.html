@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Login – Basarabia RP</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1219;color:#c8ccd4;font:16px/1.5 "Segoe UI",Arial,sans-serif;padding:16px}
+  .box{max-width:440px;text-align:center}
+  h1{color:#f3f4f6;font-size:22px;margin:0 0 8px}
+  a{color:#fff}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Se finalizează login-ul…</h1>
+  <p id="msg">Te trimitem înapoi la serverul Basarabia RP.</p>
+</div>
+<script>
+  // Discord trimite aici (HTTPS) codul de login; il predam resursei brp_auth de pe server.
+  // Daca schimbati IP-ul/portul serverului, schimbati si aici.
+  var SERVER = "http://134.255.225.49:30178";
+  var p = new URLSearchParams(location.search);
+  if (p.get("code") && p.get("state")) {
+    location.replace(SERVER + "/brp_auth/callback?code=" + encodeURIComponent(p.get("code")) +
+                     "&state=" + encodeURIComponent(p.get("state")));
+  } else {
+    document.getElementById("msg").textContent =
+      p.get("error") === "access_denied"
+        ? "Ai anulat login-ul cu Discord. Pornește din nou Basarabia RP ca să încerci iar."
+        : "Link de login invalid. Pornește din nou Basarabia RP.";
+  }
+</script>
+</body>
+</html>
