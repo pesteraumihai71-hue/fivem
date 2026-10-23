@@ -90,7 +90,22 @@ jobs:
       - name: Build client (durează câteva ore)
         shell: pwsh
         working-directory: C:\brp
-        run: .\basarabia\ci\build.ps1
+        run: |
+          .\basarabia\ci\build.ps1 *>&1 | Tee-Object -FilePath C:\brp\build.log
+          $code = $LASTEXITCODE
+          $failed = ($code -ne 0) -or (Select-String -Quiet -Path C:\brp\build.log -Pattern "BUILD EȘUAT")
+          if ($failed) {
+            # Ultimele linii din log ca adnotare de eroare (vizibilă și prin API)
+            $tail = (Get-Content C:\brp\build.log -Tail 70) -join "`n"
+            $tail = $tail.Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
+            Write-Output "::error title=Build esuat (ultimele linii din log)::$tail"
+            if (Test-Path C:\brp\.build-cache\MSBuild.Errors.log) {
+              $ms = (Get-Content C:\brp\.build-cache\MSBuild.Errors.log -TotalCount 60) -join "`n"
+              $ms = $ms.Replace('%','%25').Replace("`r",'%0D').Replace("`n",'%0A')
+              Write-Output "::error title=Erori MSBuild (primele 60)::$ms"
+            }
+            exit 1
+          }
 
       - name: Installer (Inno Setup)
         shell: pwsh
