@@ -37,7 +37,7 @@ fwPlatformString GetAbsoluteCitPath()
 #ifdef IS_RDR3
 				if (!CreateDirectory((citizenPath + L"RedM.app").c_str(), nullptr))
 #else
-				if (!CreateDirectory((citizenPath + BRP_PRODUCT_NAME_W L".app").c_str(), nullptr))
+				if (!CreateDirectory((citizenPath + BRP_APP_DIR_W).c_str(), nullptr))
 #endif
 				{
 					DWORD error = GetLastError();
@@ -57,7 +57,7 @@ fwPlatformString GetAbsoluteCitPath()
 #ifdef IS_RDR3
 								   L"RedM.app";
 #else
-								   BRP_PRODUCT_NAME_W L".app";
+								   BRP_APP_DIR_W;
 #endif
 
 			if (GetFileAttributes(subPath.c_str()) != INVALID_FILE_ATTRIBUTES && (GetFileAttributes(subPath.c_str()) & FILE_ATTRIBUTE_DIRECTORY) != 0)

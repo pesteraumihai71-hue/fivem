@@ -71,9 +71,9 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}\{#AppName}.app\data"
-Type: filesandordirs; Name: "{app}\{#AppName}.app\logs"
-Type: filesandordirs; Name: "{app}\{#AppName}.app\crashes"
+Type: filesandordirs; Name: "{app}\FiveM.app\data"
+Type: filesandordirs; Name: "{app}\FiveM.app\logs"
+Type: filesandordirs; Name: "{app}\FiveM.app\crashes"
 
 [Code]
 // Caută GTA V (Legacy sau Enhanced) în toate locurile cunoscute.

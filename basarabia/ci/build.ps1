@@ -3,7 +3,7 @@
 #  Actions sau pe orice PC/VPS Windows cu Visual Studio 2022).
 #
 #  Folosește modulele oficiale Cfx din code\tools\ci\psm1, apoi asamblează
-#  clientul în dist\ (BasarabiaRP.exe + "Basarabia RP.app\") pentru installer.
+#  clientul în dist\ (BasarabiaRP.exe + "FiveM.app\") pentru installer.
 # ============================================================================
 
 using module ..\..\code\tools\ci\psm1\cfxBuildContext.psm1
@@ -63,7 +63,7 @@ try {
         $root    = $ctx.ProjectRoot
         $binRoot = $ctx.MSBuildOutput
         $dist    = Join-Path $root "dist"
-        $app     = Join-Path $dist "Basarabia RP.app"
+        $app     = Join-Path $dist "FiveM.app"   # nume intern cerut de legitimacy.dll
 
         Remove-Item -Force -Recurse -ErrorAction Ignore $dist
         New-Item -ItemType Directory -Force "$app\bin\cef", "$app\citizen" | Out-Null

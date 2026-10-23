@@ -113,7 +113,7 @@ static void CreateUninstallEntryIfNeeded()
 void Install_Uninstall(const wchar_t* directory)
 {
 	// check if this is actually a FiveM directory we're trying to uninstall
-	if (GetFileAttributes(fmt::sprintf(L"%s\\%s", directory, PRODUCT_NAME L".app").c_str()) == INVALID_FILE_ATTRIBUTES)
+	if (GetFileAttributes(fmt::sprintf(L"%s\\%s", directory, BRP_APP_DIR_W).c_str()) == INVALID_FILE_ATTRIBUTES)
 	{
 		return;
 	}
@@ -229,9 +229,9 @@ bool Install_PerformInstallation()
 	{
 		// at least re-verify the game, if the user 'tried' to reinstall
 		DeleteFileW((rootPath + L"\\caches.xml").c_str());
-		DeleteFileW((rootPath + L"\\" PRODUCT_NAME L".app\\caches.xml").c_str());
+		DeleteFileW((rootPath + L"\\" BRP_APP_DIR_W L"\\caches.xml").c_str());
 		DeleteFileW((rootPath + L"\\content_index.xml").c_str());
-		DeleteFileW((rootPath + L"\\" PRODUCT_NAME L".app\\content_index.xml").c_str());
+		DeleteFileW((rootPath + L"\\" BRP_APP_DIR_W L"\\content_index.xml").c_str());
 
 		// hand off to the actual game
 		if (!doHandoff())
@@ -281,7 +281,7 @@ bool Install_PerformInstallation()
 
 	// create installroot dirs
 	{
-		auto appPath = rootPath + L"\\" PRODUCT_NAME L".app";
+		auto appPath = rootPath + L"\\" BRP_APP_DIR_W;
 		CreateDirectory(appPath.c_str(), nullptr);
 
 		FILE* f = _wfopen((appPath + L"\\" PRODUCT_NAME L".installroot").c_str(), L"w");

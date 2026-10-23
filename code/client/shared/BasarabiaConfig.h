@@ -16,6 +16,13 @@
 // Textul lung din bara de titlu a ferestrei jocului
 #define BRP_WINDOW_TITLE_W  L"Basarabia Roleplay"
 
+// Numele INTERN al folderului cu datele clientului (langa BasarabiaRP.exe).
+// NU il schimbati: legitimacy.dll (componenta inchisa, precompilata de Cfx.re,
+// care verifica licenta GTA V prin Rockstar) are "FiveM.app" scris in cod si
+// crapa (legitimacy.dll+2BAAE6) daca folderul are alt nume.
+// Jucatorii vad oricum doar numele "Basarabia RP" de mai sus.
+#define BRP_APP_DIR_W       L"FiveM.app"
+
 // ---------------------------------------------------------------------------
 // 2. Serverul la care clientul se conectează AUTOMAT la pornire.
 //    Acceptă "ip:port" (ex. "123.45.67.89:30120") sau "cfx.re/join/abc123".
