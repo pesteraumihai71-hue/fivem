@@ -21,7 +21,16 @@ Pachetul de joc ZAP-Hosting pornește doar versiunile oficiale FiveM.
 Pentru serverul propriu e nevoie de un **VPS** (sau server dedicat) cu Linux, de ex.
 Ubuntu 22.04/24.04, minim 4 vCPU și 8–16 GB RAM (ZAP-Hosting vinde și VPS).
 
-Pe VPS, serverul se instalează exact ca un artifact Linux oficial:
+**Instalare automată (recomandat)** – pe serverul nou, ca root:
+```bash
+curl -fsSL https://raw.githubusercontent.com/pesteraumihai71-hue/fivem/master/basarabia/vps/install.sh -o install.sh
+sudo bash install.sh
+```
+Instalează serverul, baza de date MariaDB, firewall-ul (portul SSH rămâne deschis),
+generează `server.cfg` cu secretele și pornește serverul ca serviciu (`basarabia`).
+Rularea din nou actualizează serverul fără să atingă `server.cfg`, resursele sau baza de date.
+
+Manual, serverul se instalează exact ca un artifact Linux oficial:
 ```bash
 mkdir -p ~/basarabia/server && cd ~/basarabia/server
 # descărcați basarabia-server-linux.tar.xz din Releases (server-<versiune>)
@@ -29,7 +38,7 @@ tar xf basarabia-server-linux.tar.xz
 ./run.sh +exec server.cfg      # din folderul cu resources/ și server.cfg
 ```
 Deschideți în firewall portul serverului (TCP+UDP, ex. 30120).
-Scriptul de instalare (în pregătire) face asta automat și pornește serverul ca serviciu.
+
 
 ## 2. Aplicația Discord (o singură dată)
 1. https://discord.com/developers/applications → **New Application** → „Basarabia RP”.
