@@ -165,13 +165,13 @@ if [ "$IS_WSL" = 1 ]; then
     c_warn "WSL: sar peste firewall (Windows îl gestionează)."
 else
 # portul SSH curent: NU il inchidem niciodata (serverul nu are consola KVM)
-SSH_PORT="$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')"
+SSH_PORT="$( { sshd -T 2>/dev/null || true; } | awk '/^port /{print $2; exit}' || true)"
 SSH_PORT="${SSH_PORT:-22}"
-ufw allow "$SSH_PORT/tcp" >/dev/null
+ufw allow "$SSH_PORT/tcp" >/dev/null || die "ufw: nu pot permite SSH ($SSH_PORT)"
 ufw allow OpenSSH >/dev/null 2>&1 || true
-ufw allow "$GAME_PORT/tcp" >/dev/null
-ufw allow "$GAME_PORT/udp" >/dev/null
-ufw --force enable >/dev/null
+ufw allow "$GAME_PORT/tcp" >/dev/null || die "ufw: nu pot permite portul $GAME_PORT/tcp"
+ufw allow "$GAME_PORT/udp" >/dev/null || die "ufw: nu pot permite portul $GAME_PORT/udp"
+ufw --force enable >/dev/null || die "ufw: nu pot porni firewall-ul"
 c_ok "Firewall: SSH ($SSH_PORT) + joc ($GAME_PORT tcp/udp) permise"
 fi
 
