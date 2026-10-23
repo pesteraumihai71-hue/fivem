@@ -17,6 +17,11 @@ on:
       version:
         description: "Versiunea installerului din acea rulare (ex. 1.0.0)"
         required: true
+      test:
+        description: "Doar pentru test (pre-release, site-ul rămâne pe versiunea veche)"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -43,8 +48,14 @@ jobs:
           test -f out/BasarabiaRP-Setup.exe
           sha256sum out/BasarabiaRP-Setup.exe | tee out/SHA256.txt
           tag="v${{ inputs.version }}"
+          if [ "${{ inputs.test }}" = "true" ]; then
+            tag="v${{ inputs.version }}-test"
+            flags="--prerelease --latest=false"
+          else
+            flags="--latest"
+          fi
           gh release delete "$tag" -R "${{ github.repository }}" --yes --cleanup-tag 2>/dev/null || true
           gh release create "$tag" out/BasarabiaRP-Setup.exe \
-            -R "${{ github.repository }}" --latest \
+            -R "${{ github.repository }}" $flags \
             --title "Basarabia RP $tag" \
             --notes "Installer Basarabia Roleplay $tag. Necesită GTA V instalat (Windows 10/11, 64 biți)."
