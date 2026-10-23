@@ -70,12 +70,23 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
+[Dirs]
+; Folderul intern al motorului (FiveM.app) e ascuns in Explorer - jucatorul vede doar Basarabia RP
+Name: "{app}\FiveM.app"; Attribs: hidden
+
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\FiveM.app\data"
 Type: filesandordirs; Name: "{app}\FiveM.app\logs"
 Type: filesandordirs; Name: "{app}\FiveM.app\crashes"
 
 [Code]
+// In timpul instalarii nu afisam numele fisierelor copiate (doar bara de progres).
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if CurPageID = wpInstalling then
+    WizardForm.FilenameLabel.Visible := False;
+end;
+
 // Caută GTA V (Legacy sau Enhanced) în toate locurile cunoscute.
 function HasGtaExe(Dir: String): Boolean;
 begin

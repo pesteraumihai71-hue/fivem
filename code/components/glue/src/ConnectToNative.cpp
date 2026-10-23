@@ -1036,6 +1036,56 @@ static InitFunction initFunction([] ()
 			lastHostName = hostName;
 			ConnectTo(hostName, true);
 		}
+		else if (!_wcsicmp(type, L"brpServerInfo"))
+		{
+			// Basarabia RP: starea serverului pentru launcher (cererea HTTP se face din client,
+			// pagina NUI nu poate citi direct http:// din cauza mixed-content/CORS)
+			std::string addr = ToNarrow(arg ? arg : L"");
+			bool valid = !addr.empty() && addr.size() < 128 && addr.find(':') != std::string::npos;
+
+			for (char c : addr)
+			{
+				if (!isalnum(static_cast<unsigned char>(c)) && c != '.' && c != '-' && c != ':')
+				{
+					valid = false;
+				}
+			}
+
+			if (!valid)
+			{
+				nui::PostFrameMessage("mpMenu", R"({ "type": "brpServerInfo", "ok": false })");
+				return;
+			}
+
+			auto start = std::make_shared<std::chrono::steady_clock::time_point>(std::chrono::steady_clock::now());
+
+			HttpRequestOptions options;
+			options.timeoutNoResponse = std::chrono::seconds(5);
+
+			Instance<HttpClient>::Get()->DoGetRequest(fmt::sprintf("http://%s/dynamic.json", addr), options, [start](bool success, const char* data, size_t length)
+			{
+				int ms = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - *start).count());
+				int clients = 0, maxClients = 0;
+				bool ok = false;
+
+				if (success)
+				{
+					try
+					{
+						auto j = nlohmann::json::parse(std::string(data, length));
+						clients = j.value("clients", 0);
+						auto mc = j.value("sv_maxclients", nlohmann::json());
+						maxClients = mc.is_string() ? std::atoi(mc.get<std::string>().c_str()) : (mc.is_number() ? mc.get<int>() : 0);
+						ok = true;
+					}
+					catch (...)
+					{
+					}
+				}
+
+				nui::PostFrameMessage("mpMenu", fmt::sprintf(R"({ "type": "brpServerInfo", "ok": %s, "clients": %d, "max": %d, "ms": %d })", ok ? "true" : "false", clients, maxClients, ms));
+			});
+		}
 		else if (!_wcsicmp(type, L"cancelDefer"))
 		{
 			if (!XBR_InterceptCancelDefer())

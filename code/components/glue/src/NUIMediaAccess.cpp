@@ -139,6 +139,18 @@ bool HandleMediaRequest(const std::string& frameOrigin, const std::string& url, 
 	// do not allow desktop video capture (this has been shown to be abused and users do not understand security implications)
 	permissions &= ~nui::NUI_MEDIA_PERMISSION_DESKTOP_VIDEO_CAPTURE;
 
+	// Basarabia RP: fara fereastra de permisiune (consola F8 e dezactivata pentru jucatori).
+	// Microfonul (voice/radio) e permis automat pentru resursele serverului; camera si sunetul
+	// desktopului nu se dau niciodata.
+	static volatile bool brpAutoMedia = true;
+
+	if (brpAutoMedia)
+	{
+		int granted = permissions & nui::NUI_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE;
+		onComplete(granted != 0, granted);
+		return true;
+	}
+
 	// if this server+resource already has permission, keep it
 	auto origin = GetMediaPermissionServerKey() + ":" + frameOrigin;
 	int hadPermissions = 0;

@@ -348,7 +348,7 @@
   // Configurare (schimbati aici daca se muta serverul)
   // ---------------------------------------------------------------------------
   var BRP = {
-    server: "134.255.225.49:30178",
+    server: "81.181.113.119:30120",
     news: "https://pesteraumihai71-hue.github.io/fivem/news.json",
     discord: "https://discord.gg/"   // linkul de invitatie al serverului
   };
@@ -392,18 +392,23 @@
   // ---------------------------------------------------------------------------
   // Traduceri pentru mesajele de conectare
   // ---------------------------------------------------------------------------
+  // Textele clientului -> romana. Numele si numarul resurselor nu se afiseaza niciodata.
   var ro = [
-    [/^Connecting to server\.*$/i, "Se conectează la server…"],
-    [/^Handshaking with server\.*$/i, "Se stabilește conexiunea…"],
-    [/^Downloading content\.*$/i, "Se descarcă resursele serverului…"],
-    [/^Verifying content\.*$/i, "Se verifică resursele…"],
-    [/^Loading game\.*$/i, "Se încarcă jocul…"],
-    [/^Requesting server variables\.*$/i, "Se citesc setările serverului…"],
-    [/^Obtaining Steam ticket\.*$/i, "Se verifică Steam…"]
+    [/^(Fetching info from server|Requesting server (endpoints|feature policy|permissions|variables))/i, "Se citesc informațiile serverului…"],
+    [/^Connecting to server/i, "Se conectează la server…"],
+    [/^Handshaking with server/i, "Se stabilește conexiunea…"],
+    [/^Obtaining Steam ticket/i, "Se verifică Steam…"],
+    [/^(Downloading|Loading) content manifest/i, "Se pregătește serverul…"],
+    [/^(Verifying|Downloading|Mounted|Mounting|Unloading)\b/i, "Se încarcă serverul…"],
+    [/^Downloading completed/i, "Server încărcat. Se pornește jocul…"],
+    [/^Loading game/i, "Se încarcă jocul…"],
+    [/^Waiting for game to shut down/i, "Se închide sesiunea anterioară…"]
   ];
   function translate(msg) {
     msg = String(msg || "");
     for (var i = 0; i < ro.length; i++) if (ro[i][0].test(msg)) return ro[i][1];
+    // orice alt text tehnic in engleza al clientului (contine "(x of y)" sau "MiB") -> mesaj generic
+    if (/\(\d+ of \d+|MiB|kB\)/.test(msg)) return "Se încarcă serverul…";
     return msg;
   }
 
@@ -430,7 +435,7 @@
   // adresa serverului: implicit BRP.server; se poate schimba din Setari (pentru teste / mutare)
   function validAddr(a) { return /^[A-Za-z0-9.\-]+:\d{1,5}$/.test(a); }
   function server() {
-    try { var a = localStorage.getItem("brp_server"); if (a && validAddr(a)) return a; } catch (e) {}
+    try { var a = localStorage.getItem("brp_server"); if (a && validAddr(a) && a !== "134.255.225.49:30178") return a; } catch (e) {}
     return BRP.server;
   }
   $("srvInput").value = server();
@@ -474,7 +479,8 @@
       case "connectStatus":
         show("home"); setState("connecting");
         var s = d.data || {};
-        $("status").textContent = translate(s.message);
+        var pct = (s.total > 0 && s.count >= 0) ? Math.min(100, Math.round(s.count * 100 / s.total)) : -1;
+        $("status").textContent = translate(s.message) + (pct >= 0 && pct < 100 && s.total > 1 ? " " + pct + "%" : "");
         if (s.total > 0 && s.count >= 0) {
           $("bar").classList.remove("indeterminate");
           $("bar").firstElementChild.style.width = Math.min(100, Math.round(s.count * 100 / s.total)) + "%";
@@ -551,12 +557,27 @@
       $("sPingSub").textContent = "Fără conexiune";
     }
   }
-  function poll() {
+  // Cererea o face clientul (native brpServerInfo) - pagina nu poate citi direct http://.
+  // Daca clientul e mai vechi si nu raspunde, incercam si direct din pagina.
+  var pollWait = null;
+  function fallbackPoll() {
     var t0 = Date.now();
     fetch("http://" + server() + "/dynamic.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
       serverState(true, typeof s.clients === "number" ? s.clients : 0, s.sv_maxclients, Math.max(1, Math.round((Date.now() - t0) / 2)));
     }).catch(function () { serverState(false); });
   }
+  function poll() {
+    clearTimeout(pollWait);
+    pollWait = setTimeout(fallbackPoll, 7000);
+    native("brpServerInfo", server());
+  }
+  window.addEventListener("message", function (event) {
+    var d = event.data;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { return; } }
+    if (!d || d.type !== "brpServerInfo") return;
+    clearTimeout(pollWait);
+    serverState(!!d.ok, d.clients || 0, d.max || 0, Math.max(1, Math.round((d.ms || 0) / 2)));
+  });
   poll();
   setInterval(poll, 30000);
 

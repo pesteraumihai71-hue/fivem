@@ -22,6 +22,18 @@ static std::thread g_consoleThread;
 static std::once_flag g_consoleInitialized;
 bool g_consoleFlag;
 bool g_cursorFlag;
+
+// Basarabia RP: consola F8 e inchisa pentru jucatori (ca pe RAGE MP). Echipa de dezvoltare
+// o poate deschide pornind clientul cu parametrul -brpdev. Logurile raman in fisierul CitizenFX_log.
+static bool BrpConsoleAllowed()
+{
+#ifdef _WIN32
+	static bool allowed = wcsstr(GetCommandLineW(), L"-brpdev") != nullptr;
+	return allowed;
+#else
+	return true;
+#endif
+}
 extern int g_scrollTop;
 extern int g_bufferHeight;
 
@@ -105,7 +117,7 @@ static InitFunction initFunction([] ()
 			{
 				virtual void KeyUp(UINT vKey, UINT scanCode) override
 				{
-					if (vKey == VK_F8)
+					if (vKey == VK_F8 && BrpConsoleAllowed())
 					{
 						g_consoleFlag = true;
 					}
@@ -144,7 +156,7 @@ static InitFunction initFunction([] ()
 		if (!hadConsoleFlag)
 		{
 			// check if the console should be opened
-			if (msg == WM_KEYUP && wParam == VK_F8)
+			if (msg == WM_KEYUP && wParam == VK_F8 && BrpConsoleAllowed())
 			{
 				g_consoleFlag = true;
 				InputHook::SetGameMouseFocus(false);

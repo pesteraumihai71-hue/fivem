@@ -15,7 +15,11 @@ static hook::cdecl_stub<void(int)> _deactivateStatus([]()
 
 void ActivateStatusText(const char* string, int type, int priority)
 {
-	return _activateStatus(string, type, priority);
+	// Basarabia RP: fara textul + cercul din coltul ecranului ("Loading game (87%)",
+	// "Preloading collisions", "Downloading assets"...). Progresul se vede doar pe loading screen.
+	(void)string;
+	(void)type;
+	(void)priority;
 }
 
 void DeactivateStatusText(int priority)
