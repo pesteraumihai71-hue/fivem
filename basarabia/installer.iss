@@ -98,6 +98,9 @@ function CheckRoot(Root: Integer): Boolean;
 begin
   Result :=
     RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V', 'InstallFolder') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V', 'InstallFolderEpic') or
+    RegDir(Root, 'SOFTWARE\Rockstar Games\Grand Theft Auto V', 'InstallFolderEpic') or
+    RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V', 'InstallFolderXboxPc') or
     RegDir(Root, 'SOFTWARE\Rockstar Games\Grand Theft Auto V', 'InstallFolder') or
     RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\Grand Theft Auto V Enhanced', 'InstallFolder') or
     RegDir(Root, 'SOFTWARE\WOW6432Node\Rockstar Games\GTAV', 'InstallFolderSteam') or
