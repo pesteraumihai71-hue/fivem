@@ -8,6 +8,13 @@ JOB_SLOTS=${JOB_SLOTS:-24}
 
 . /root/py-venv/bin/activate
 
+# Basarabia RP: git-ul din edge cere un libcurl nou, dar curl e fixat la 7.72
+# -> "git-remote-https: curl_global_trace: symbol not found". Folosim un git mai vechi (v3.14).
+if ! git ls-remote https://github.com/citizenfx/node-libclang.git >/dev/null 2>&1; then
+	apk add --no-cache 'git<2.33' || true
+	git ls-remote https://github.com/citizenfx/node-libclang.git >/dev/null
+fi
+
 # build natives
 if [ "$SKIP_NATIVES" == "" ]; then
 	cd /src/ext/natives
