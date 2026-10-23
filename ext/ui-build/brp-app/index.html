@@ -198,6 +198,10 @@
   .box .row b{display:block;color:var(--white);font-weight:600}
   .box .row span{color:var(--muted);font-size:14px}
   .box .row .btn{margin-top:0;flex:none}
+  .srvedit{display:flex;gap:8px;margin-top:8px}
+  .srvedit input{width:240px;padding:8px 10px;border-radius:5px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--white);font-size:14px;user-select:text}
+  .srvedit input:focus{outline:2px solid var(--red);outline-offset:1px}
+  .srvedit .btn{margin-top:0;padding:8px 12px}
   .toggle{position:relative;width:52px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);flex:none;transition:background-color .2s}
   .toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
   .toggle[aria-checked="true"]{background:var(--red)}
@@ -322,7 +326,9 @@
       <h2>Setări</h2>
       <p class="sub">Basarabia RP Launcher</p>
       <div class="box">
-        <div class="row"><div><b>Server</b><span class="mono" id="setServer"></span></div><button class="btn red" id="play2">Conectare</button></div>
+        <div class="row"><div><b>Server</b><span>Adresa serverului Basarabia RP (IP:port). Schimbați doar dacă vi se cere.</span>
+          <div class="srvedit"><input id="srvInput" class="mono" spellcheck="false" autocomplete="off" aria-label="Adresa serverului"><button class="btn" id="srvReset" title="Adresa implicită">Implicit</button></div></div>
+          <button class="btn red" id="play2">Conectare</button></div>
         <div class="row"><div><b>Comunitatea pe Discord</b><span>Anunțuri, suport și cereri de ajutor</span></div><button class="btn" id="discord"><svg width="18" height="18"><use href="#i-discord"/></svg>Discord</button></div>
         <div class="row"><div><b>Muzică în meniu</b><span>Muzica GTA V din fundalul meniului</span></div><button class="toggle" id="music" role="switch" aria-checked="false"><i></i></button></div>
         <div class="row"><div><b>Setările jocului</b><span>Grafica, sunetul și tastele se schimbă din meniul de pauză al jocului (ESC → Setări).</span></div></div>
@@ -409,7 +415,7 @@
     setState("connecting");
     $("status").textContent = "Se conectează la server…";
     $("bar").classList.add("indeterminate");
-    native("connectTo", JSON.stringify([BRP.server]));
+    native("connectTo", JSON.stringify([server()]));
   }
   function idle() { setState("idle"); $("play").focus(); }
 
@@ -421,7 +427,23 @@
   $("quit").addEventListener("click", function () { native("exit"); });
   $("close").addEventListener("click", function () { native("exit"); });
   $("discord").addEventListener("click", function () { native("openUrl", BRP.discord); });
-  $("setServer").textContent = BRP.server;
+  // adresa serverului: implicit BRP.server; se poate schimba din Setari (pentru teste / mutare)
+  function validAddr(a) { return /^[A-Za-z0-9.\-]+:\d{1,5}$/.test(a); }
+  function server() {
+    try { var a = localStorage.getItem("brp_server"); if (a && validAddr(a)) return a; } catch (e) {}
+    return BRP.server;
+  }
+  $("srvInput").value = server();
+  $("srvInput").addEventListener("change", function () {
+    var a = this.value.trim().replace(/^https?:\/\//, "").replace(/\/+$/, "");
+    if (!validAddr(a)) { this.value = server(); return; }
+    try { if (a === BRP.server) localStorage.removeItem("brp_server"); else localStorage.setItem("brp_server", a); } catch (e) {}
+    this.value = a; poll();
+  });
+  $("srvReset").addEventListener("click", function () {
+    try { localStorage.removeItem("brp_server"); } catch (e) {}
+    $("srvInput").value = BRP.server; poll();
+  });
 
   // muzica din meniu: oprita implicit (ui_disableMusicTheme = true); setarea e salvata de client
   function musicOn() { try { return localStorage.getItem("brp_music") === "1"; } catch (e) { return false; } }
@@ -531,7 +553,7 @@
   }
   function poll() {
     var t0 = Date.now();
-    fetch("http://" + BRP.server + "/dynamic.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
+    fetch("http://" + server() + "/dynamic.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
       serverState(true, typeof s.clients === "number" ? s.clients : 0, s.sv_maxclients, Math.max(1, Math.round((Date.now() - t0) / 2)));
     }).catch(function () { serverState(false); });
   }

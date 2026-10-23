@@ -134,6 +134,19 @@ static InitFunction initFunction([]()
 {
 	NetLibrary::OnNetLibraryCreate.Connect([](NetLibrary* lib)
 	{
+		// biletul a fost refuzat de server (alt server / secret schimbat / expirat): il stergem,
+		// ca la urmatoarea conectare sa se deschida din nou login-ul cu Discord
+		lib->OnConnectionErrorEvent.Connect([](const char* error)
+		{
+			std::string e = error ? error : "";
+
+			if (e.find("Biletul Basarabia RP") != std::string::npos || e.find("Sesiunea Basarabia RP") != std::string::npos ||
+				e.find("Loghează-te din nou") != std::string::npos)
+			{
+				BrpForgetTicket();
+			}
+		});
+
 		lib->OnInterceptConnectionForAuth.Connect([lib](const std::string& url, const std::string& licenseKeyToken, const std::function<void(bool, const std::map<std::string, std::string>&)>& cb)
 		{
 			auto ticket = BrpLoadTicket();
@@ -147,7 +160,16 @@ static InitFunction initFunction([]()
 			BrpForgetTicket();
 
 			lib->OnConnectionProgress("Loghează-te cu Discord în browser ca să intri pe " BRP_PRODUCT_NAME_A "...", 0, 100, true);
-			ShellExecuteW(nullptr, L"open", BRP_AUTH_LOGIN_URL_W, nullptr, nullptr, SW_SHOWNORMAL);
+
+			// pagina de login e chiar pe serverul la care ne conectam (url = "http://ip:port/")
+			std::wstring loginUrl = BRP_AUTH_LOGIN_URL_W;
+
+			if ((url.rfind("http://", 0) == 0 || url.rfind("https://", 0) == 0) && url.find_first_of("\"<> \r\n") == std::string::npos)
+			{
+				loginUrl = ToWide(url + (url.back() == '/' ? "" : "/") + "brp_auth/login");
+			}
+
+			ShellExecuteW(nullptr, L"open", loginUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 
 			std::thread([lib, cb]()
 			{

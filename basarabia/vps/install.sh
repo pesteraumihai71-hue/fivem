@@ -38,11 +38,20 @@ die()    { printf '\033[1;31mEROARE: %s\033[0m\n' "$*" >&2; exit 1; }
 command -v apt-get >/dev/null || die "Scriptul e pentru Ubuntu/Debian (apt)."
 [[ "$GAME_PORT" =~ ^[0-9]+$ ]] || die "GAME_PORT invalid: $GAME_PORT"
 
+# Windows (WSL): fara firewall ufw, adresa = IP-ul masinii WSL (accesibil din Windows)
+IS_WSL=0
+grep -qi microsoft /proc/version 2>/dev/null && IS_WSL=1
+if [ ! -d /run/systemd/system ]; then
+    [ "$IS_WSL" = 1 ] && die "systemd nu e pornit în WSL. Rulați în Ubuntu:  printf '[boot]\nsystemd=true\n' | sudo tee /etc/wsl.conf  apoi în PowerShell:  wsl --shutdown  și deschideți din nou Ubuntu."
+    die "systemd nu rulează pe acest sistem."
+fi
+
 # ---------------------------------------------------------------------------
 c_info "1/7 Pachete de sistem"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq curl ca-certificates xz-utils tar openssl ufw mariadb-server >/dev/null
+apt-get install -y -qq curl ca-certificates xz-utils tar openssl mariadb-server >/dev/null
+[ "$IS_WSL" = 1 ] || apt-get install -y -qq ufw >/dev/null
 c_ok "OK"
 
 # ---------------------------------------------------------------------------
@@ -102,7 +111,11 @@ c_ok "OK (baza '$DB_NAME', utilizator '$DB_USER')"
 
 # ---------------------------------------------------------------------------
 c_info "6/7 server.cfg"
-PUBLIC_IP="$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}')"
+if [ "$IS_WSL" = 1 ]; then
+    PUBLIC_IP="$(hostname -I | awk '{print $1}')"
+else
+    PUBLIC_IP="$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}')"
+fi
 CFG="$DATA_DIR/server.cfg"
 if [ ! -f "$CFG" ]; then
     AUTH_SECRET="$(openssl rand -hex 32)"
@@ -148,6 +161,9 @@ chmod 600 "$CFG"
 
 # ---------------------------------------------------------------------------
 c_info "7/7 Firewall + serviciu"
+if [ "$IS_WSL" = 1 ]; then
+    c_warn "WSL: sar peste firewall (Windows îl gestionează)."
+else
 # portul SSH curent: NU il inchidem niciodata (serverul nu are consola KVM)
 SSH_PORT="$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')"
 SSH_PORT="${SSH_PORT:-22}"
@@ -157,6 +173,7 @@ ufw allow "$GAME_PORT/tcp" >/dev/null
 ufw allow "$GAME_PORT/udp" >/dev/null
 ufw --force enable >/dev/null
 c_ok "Firewall: SSH ($SSH_PORT) + joc ($GAME_PORT tcp/udp) permise"
+fi
 
 cat > /etc/systemd/system/basarabia.service <<UNIT
 [Unit]

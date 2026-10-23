@@ -360,7 +360,9 @@ SetHttpHandler((req, res) => {
     }
 
     if (pathname === '/login') {
-        const state = newId();
+        // state = base64url(adresa serverului) "." id  -> pagina de pe site stie unde sa trimita codul
+        const base = publicUrl();
+        const state = (base ? Buffer.from(base).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') + '.' : '') + newId();
         pendingStates.set(state, Date.now());
 
         redirect(res, 'https://discord.com/oauth2/authorize?' + querystring.stringify({
