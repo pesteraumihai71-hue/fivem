@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basarabia RP – server de roleplay pe GTA V</title>
+<meta name="description" content="Basarabia Roleplay (Basarabia RP) – server de roleplay pe GTA V. Descarcă aplicația Basarabia RP și intră direct pe server.">
+<meta name="theme-color" content="#0f1219">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Basarabia RP – server de roleplay pe GTA V">
+<meta property="og:description" content="Descarcă aplicația Basarabia RP și intră direct pe server.">
+<meta property="og:image" content="og.jpg">
+<meta property="og:locale" content="ro_RO">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Basarabia Roleplay",
+  "alternateName": ["Basarabia RP", "BasarabiaRP"],
+  "logo": "logo.png",
+  "description": "Server de roleplay pe GTA V."
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Saira+Condensed:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --night:#0f1219;
+  --night-2:#151a24;
+  --oxblood:#7d0d18;
+  --signal:#e3192d;
+  --chrome:#c8ccd4;
+  --steel:#7b808b;
+  --white:#f3f4f6;
+  --display:"Saira Condensed","Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--night);color-scheme:dark}
+body{margin:0;background:var(--night);color:var(--chrome);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:var(--white)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:4px}
+
+/* ---------- Hero: orașul din „B” ---------- */
+.hero{--sky:min(30vh,240px);position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px 16px calc(var(--sky) + 32px);text-align:center;overflow:hidden;isolation:isolate}
+.hero::before{ /* orizontul roșu */
+  content:"";position:absolute;left:-20%;right:-20%;bottom:0;height:calc(var(--sky) + 260px);z-index:-2;
+  background:radial-gradient(55% 70% at 50% 100%,rgba(227,25,45,.75),rgba(125,13,24,.45) 40%,transparent 72%)}
+.hero::after{ /* silueta orașului */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:var(--sky);z-index:-1;
+  background:url(skyline.svg) bottom center/auto 100% repeat-x}
+.logo{width:min(420px,78vw);filter:drop-shadow(0 18px 40px rgba(0,0,0,.6))}
+.tagline{margin:18px 0 0;font:600 clamp(1.25rem,3.4vw,1.6rem)/1.2 var(--display);letter-spacing:.02em;color:var(--white)}
+.actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 28px;border-radius:6px;
+  font:800 1.25rem/1 var(--display);letter-spacing:.03em;text-decoration:none;transition:transform .15s,background-color .15s}
+.btn svg{width:22px;height:22px;flex:none}
+.btn-primary{background:var(--signal);color:#fff;box-shadow:0 10px 30px rgba(227,25,45,.35),inset 0 -3px 0 rgba(0,0,0,.25)}
+.btn-primary:hover{background:#f02a3d;transform:translateY(-1px)}
+.btn-secondary{background:rgba(243,244,246,.06);color:var(--white);border:1px solid rgba(200,204,212,.28)}
+.btn-secondary:hover{background:rgba(243,244,246,.12)}
+.meta{margin:14px 0 0;font-size:.95rem;color:var(--steel)}
+
+/* ---------- Conținut ---------- */
+main{background:var(--night)}
+.wrap{max-width:68rem;margin:0 auto;padding:0 16px}
+section{padding:72px 0}
+section+section{border-top:1px solid rgba(200,204,212,.08)}
+h2{margin:0 0 28px;font:800 clamp(2rem,5vw,2.75rem)/1.05 var(--display);color:var(--white);letter-spacing:.01em}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:28px;grid-template-columns:repeat(3,1fr);counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding-top:68px;max-width:34ch}
+.steps li::before{content:counter(s);position:absolute;top:0;left:0;font:800 4rem/1 var(--display);
+  color:transparent;-webkit-text-stroke:1.5px var(--signal)}
+.steps h3{margin:0 0 6px;font:600 1.45rem/1.2 var(--display);color:var(--white)}
+.steps p{margin:0}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.req{margin:0;padding:0;list-style:none}
+.req li{padding:12px 0;border-bottom:1px solid rgba(200,204,212,.1)}
+.req li:first-child{padding-top:0}
+.req b{color:var(--white);font-weight:600}
+
+details{border-bottom:1px solid rgba(200,204,212,.1)}
+details:first-of-type{border-top:1px solid rgba(200,204,212,.1)}
+summary{cursor:pointer;list-style:none;padding:16px 36px 16px 0;position:relative;font:600 1.3rem/1.3 var(--display);color:var(--white)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:4px;top:12px;font:600 1.6rem/1 var(--body);color:var(--signal);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 18px;max-width:62ch}
+
+footer{padding:40px 16px 56px;text-align:center;font-size:.9rem;color:var(--steel)}
+footer p{margin:4px auto;max-width:60ch}
+
+/* ---------- Un singur moment de animație: logo-ul se aprinde ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .logo{animation:ignite 1.1s cubic-bezier(.2,.7,.2,1) both}
+  .hero::before{animation:glow 1.6s ease-out both}
+  @keyframes ignite{from{opacity:0;transform:scale(.94);filter:brightness(.3) drop-shadow(0 0 0 rgba(227,25,45,0))}
+                    60%{filter:brightness(1.25) drop-shadow(0 0 40px rgba(227,25,45,.7))}
+                    to{opacity:1;transform:none}}
+  @keyframes glow{from{opacity:0}to{opacity:1}}
+}
+
+@media (max-width:760px){
+  .steps,.split{grid-template-columns:1fr}
+  .split{gap:56px}
+  section{padding:56px 0}
+  .hero{--sky:min(24vh,190px)}
+  .logo{width:min(340px,80vw)}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 style="margin:0"><img class="logo" src="logo.png" width="420" height="420" alt="Basarabia RP"></h1>
+  <p class="tagline">Server de roleplay pe GTA V</p>
+
+  <div class="actions">
+    <a class="btn btn-primary" id="download"
+       href="https://github.com/pesteraumihai71-hue/fivem/releases/latest/download/BasarabiaRP-Setup.exe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+      Descarcă Basarabia RP
+    </a>
+    <a class="btn btn-secondary" id="discord" href="#" hidden>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 5.3A16.5 16.5 0 0 0 15.5 4l-.5 1a15 15 0 0 0-6 0l-.5-1a16.4 16.4 0 0 0-4.1 1.3C1.8 9.2 1.1 13 1.4 16.7a16.6 16.6 0 0 0 5 2.5l1.1-1.7a10.7 10.7 0 0 1-1.7-.8l.4-.3a11.8 11.8 0 0 0 11.6 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.5 16.5 0 0 0 5-2.5c.4-4.3-.7-8-3-11.4ZM8.7 14.4c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg>
+      Discord
+    </a>
+  </div>
+  <p class="meta">Pentru Windows 10 și 11. Ai nevoie de GTA V.</p>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <h2>Cum intri pe server</h2>
+      <ol class="steps">
+        <li>
+          <h3>Instalează GTA V</h3>
+          <p>Ai nevoie de Grand Theft Auto V cumpărat pe Steam, Epic Games sau Rockstar Games Launcher.</p>
+        </li>
+        <li>
+          <h3>Descarcă Basarabia RP</h3>
+          <p>Apasă pe butonul de sus, deschide <b>BasarabiaRP-Setup.exe</b> și urmează pașii din installer.</p>
+        </li>
+        <li>
+          <h3>Pornește jocul</h3>
+          <p>Deschide Basarabia RP de pe Desktop. Te conectezi automat pe server, fără alte setări.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <h2>Ce îți trebuie</h2>
+        <ul class="req">
+          <li><b>Sistem:</b> Windows 10 sau 11, pe 64 de biți</li>
+          <li><b>Joc:</b> GTA V, versiunea originală (Legacy)</li>
+          <li><b>Spațiu liber:</b> câțiva GB pentru aplicație și resursele serverului</li>
+          <li><b>Internet:</b> la prima intrare se descarcă resursele serverului</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Întrebări</h2>
+        <details>
+          <summary>Windows spune „Windows protected your PC”</summary>
+          <p>Apasă „More info”, apoi „Run anyway”. Mesajul apare la aplicațiile noi, care nu au încă semnătură digitală.</p>
+        </details>
+        <details>
+          <summary>Prima intrare durează mult</summary>
+          <p>La prima conectare se descarcă mașinile, hărțile și scripturile serverului. Data viitoare intri mult mai repede.</p>
+        </details>
+        <details>
+          <summary>Îmi păstrez contul de pe server?</summary>
+          <p>Da. Serverul și conturile rămân aceleași, se schimbă doar aplicația cu care intri.</p>
+        </details>
+        <details>
+          <summary>Nu găsește GTA V</summary>
+          <p>La prima pornire, alege manual folderul în care e instalat GTA V (cel care conține GTA5.exe).</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© Basarabia Roleplay</p>
+  <p>Basarabia RP nu este afiliat cu Rockstar Games sau Take-Two Interactive. Grand Theft Auto V este o marcă a Take-Two Interactive.</p>
+</footer>
+
+<script>
+  // Link-ul de Discord al serverului. Gol = butonul e ascuns.
+  const DISCORD_URL = "";
+  if (DISCORD_URL) {
+    const d = document.getElementById("discord");
+    d.href = DISCORD_URL; d.hidden = false;
+  }
+</script>
+</body>
+</html>
