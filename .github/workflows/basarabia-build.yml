@@ -87,6 +87,37 @@ jobs:
           if (-not (Get-Command yarn -ErrorAction SilentlyContinue)) { npm install -g yarn }
           if (-not (Test-Path C:\msys64)) { throw "Lipsește MSYS2 la C:\msys64 (necesar pentru build)" }
 
+      # Codul Cfx cere Windows SDK 10.0.22000.0 (code/premake5.lua), care nu
+      # mai vine preinstalat pe mașinile GitHub. Îl instalăm; dacă nu se poate,
+      # folosim cel mai nou SDK instalat (compatibil).
+      - name: Windows SDK 10.0.22000
+        shell: pwsh
+        run: |
+          $kits = "${env:ProgramFiles(x86)}\Windows Kits\10"
+          $want = "10.0.22000.0"
+          function Has-Sdk { (Test-Path "$kits\Include\$want\um") -and (Test-Path "$kits\Lib\$want\um\x64") }
+          if (-not (Has-Sdk)) {
+            $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            $vs = & $vswhere -latest -products * -property installationPath
+            $p = Start-Process "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" -Wait -PassThru -ArgumentList @(
+              "modify", "--installPath", "`"$vs`"",
+              "--add", "Microsoft.VisualStudio.Component.Windows11SDK.22000",
+              "--quiet", "--norestart", "--nocache")
+            Write-Output "vs_installer: cod $($p.ExitCode)"
+          }
+          if (Has-Sdk) {
+            Write-Output "Windows SDK $want disponibil."
+          } else {
+            $latest = Get-ChildItem "$kits\Include" -Directory |
+              Where-Object { $_.Name -match '^10\.0\.\d+\.0$' -and (Test-Path "$kits\Lib\$($_.Name)\um\x64") } |
+              Sort-Object { [version]$_.Name } | Select-Object -Last 1
+            if (-not $latest) { throw "Niciun Windows SDK utilizabil instalat." }
+            Write-Output "::warning title=Windows SDK::SDK $want indisponibil, folosesc $($latest.Name)"
+            $pm = "C:\brp\code\premake5.lua"
+            (Get-Content -Raw $pm).Replace("systemversion '$want'", "systemversion '$($latest.Name)'") | Set-Content -NoNewline $pm
+            Select-String -Path $pm -Pattern "systemversion"
+          }
+
       - name: Build client (durează câteva ore)
         shell: pwsh
         working-directory: C:\brp
