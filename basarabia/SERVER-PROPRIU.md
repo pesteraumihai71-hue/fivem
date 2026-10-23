@@ -13,7 +13,7 @@ Soluția: server compilat din același cod (fork-ul vostru) + login propriu cu D
 | Login jucători | cont / bilet Cfx | Discord (resursa `brp_auth`) |
 | Cheie licență (`sv_licenseKey`) | obligatorie | nu mai e folosită |
 | Listă servere Cfx | da | nu |
-| txAdmin | da | da (inclus în build) |
+| txAdmin | da | **nu** – serverul pornește direct cu `server.cfg` |
 | Resurse, vRP 2, baza de date | – | **neschimbate** |
 
 ## 1. Hosting
@@ -26,9 +26,10 @@ Pe VPS, serverul se instalează exact ca un artifact Linux oficial:
 mkdir -p ~/basarabia/server && cd ~/basarabia/server
 # descărcați basarabia-server-linux.tar.xz din Releases (server-<versiune>)
 tar xf basarabia-server-linux.tar.xz
-./run.sh          # prima pornire = txAdmin (port 40120), apoi configurați din browser
+./run.sh +exec server.cfg      # din folderul cu resources/ și server.cfg
 ```
-Deschideți în firewall: portul serverului (TCP+UDP, ex. 30120) și 40120 (txAdmin).
+Deschideți în firewall portul serverului (TCP+UDP, ex. 30120).
+Scriptul de instalare (în pregătire) face asta automat și pornește serverul ca serviciu.
 
 ## 2. Aplicația Discord (o singură dată)
 1. https://discord.com/developers/applications → **New Application** → „Basarabia RP”.

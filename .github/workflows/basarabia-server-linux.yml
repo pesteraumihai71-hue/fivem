@@ -1,5 +1,5 @@
 # ============================================================================
-#  Basarabia RP - build server propriu (FXServer + txAdmin) pentru Linux
+#  Basarabia RP - build server propriu (fara txAdmin) pentru Linux
 #
 #  Rezultat: basarabia-server-linux.tar.xz (acelasi format ca artifactele
 #  oficiale Linux: alpine/ + run.sh), atasat la un Release "server-<versiune>"
@@ -54,8 +54,10 @@ jobs:
             -e JOB_SLOTS=$(nproc) \
             -e CI_PIPELINE_ID=${{ github.run_number }} \
             brp-server-builder sh -ec '
-              # txAdmin (monitor) + chat, din sursele lor publice
+              # resursa de sistem "chat" (din codul public). FARA txAdmin (monitor):
+              # serverul Basarabia RP porneste direct cu server.cfg.
               (cd ext/system-resources && sh build.sh)
+              rm -rf ext/system-resources/data/monitor
 
               # compilarea propriu-zisa (scriptul public Cfx, fara componente private)
               sh code/tools/ci/build_server_docker_alpine_public.sh
@@ -91,4 +93,4 @@ jobs:
             -R "${{ github.repository }}" --target ${{ github.sha }} \
             --prerelease --latest=false \
             --title "Basarabia RP server ${{ inputs.version }} (Linux)" \
-            --notes "Server propriu Basarabia RP (FXServer + txAdmin), fără Cfx.re. Instrucțiuni: basarabia/SERVER-PROPRIU.md"
+            --notes "Server propriu Basarabia RP, fără Cfx.re și fără txAdmin. Instrucțiuni: basarabia/SERVER-PROPRIU.md"
