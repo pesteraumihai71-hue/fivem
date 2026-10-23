@@ -42,7 +42,13 @@ const STEAM_GTA_APPIDS = [271590, 3240220];
 
 function cfg(name, fallback = '') {
     const v = GetConvar(name, fallback);
-    return typeof v === 'string' ? v.trim() : fallback;
+    const t = typeof v === 'string' ? v.trim() : fallback;
+    // valorile-exemplu din server.cfg ("COMPLETATI_...") inseamna "necompletat"
+    return /^COMPLETATI_/i.test(t) ? '' : t;
+}
+
+function ownershipRequired() {
+    return /^(1|true|yes|on)$/i.test(cfg('brp_requireOwnership'));
 }
 
 function publicUrl() {
@@ -267,16 +273,20 @@ function finish(res, identity, ownership) {
 
 function chooseOwnership(res, sess) {
     const enabled = ownershipMode();
-    const buttons = enabled.map((key) => {
-        const p = platforms[key];
-        return p.ready()
-            ? `<a class="btn" href="/${RESOURCE}/own/${key}/start?sess=${sess}">Confirm GTA V prin ${escapeHtml(p.name)}</a>`
-            : `<span class="btn">${escapeHtml(p.name)} – în curând</span>`;
-    }).join('');
+    let buttons = enabled.filter((key) => platforms[key].ready()).map((key) =>
+        `<a class="btn" href="/${RESOURCE}/own/${key}/start?sess=${sess}">Confirm GTA V prin ${escapeHtml(platforms[key].name)}</a>`
+    ).join('');
+
+    // verificarea nu e obligatorie: oricine (Steam, Epic, Rockstar) poate continua
+    if (!ownershipRequired()) {
+        buttons += `<a class="btn" href="/${RESOURCE}/own/skip/start?sess=${sess}">Continuă (Epic / Rockstar / fără verificare)</a>`;
+    }
 
     send(res, 200, page(
         'Confirmă că ai GTA V',
-        'Basarabia RP verifică licența GTA V direct la platforma de unde ai cumpărat jocul.',
+        ownershipRequired()
+            ? 'Basarabia RP verifică licența GTA V direct la platforma de unde ai cumpărat jocul.'
+            : 'Dacă ai GTA V pe Steam, îl poți confirma acum. Cu Epic sau Rockstar Games Launcher apasă „Continuă”.',
         '',
         buttons
     ));
@@ -321,7 +331,7 @@ async function handleDiscordCallback(query, res) {
 
     const identity = { discordId: me.json.id, name: me.json.global_name || me.json.username };
 
-    if (ownershipMode().length === 0) {
+    if (ownershipMode().length === 0 || (!ownershipRequired() && !ownershipMode().some((k) => platforms[k].ready()))) {
         finish(res, identity, null);
         return;
     }
@@ -377,6 +387,19 @@ SetHttpHandler((req, res) => {
 
     if (pathname === '/callback') {
         handleDiscordCallback(query, res).catch((e) => fail(res, e));
+        return;
+    }
+
+    // fara verificare (doar cand brp_requireOwnership e false)
+    if (pathname === '/own/skip/start') {
+        const sess = String(query.sess || '');
+        const identity = sessions.get(sess);
+        if (!identity || ownershipRequired()) {
+            send(res, 400, page('Link expirat', 'Sesiunea a expirat. Pornește din nou Basarabia RP.'));
+            return;
+        }
+        sessions.delete(sess);
+        finish(res, identity, null);
         return;
     }
 
