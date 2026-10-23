@@ -198,6 +198,10 @@
   .box .row b{display:block;color:var(--white);font-weight:600}
   .box .row span{color:var(--muted);font-size:14px}
   .box .row .btn{margin-top:0;flex:none}
+  .toggle{position:relative;width:52px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);flex:none;transition:background-color .2s}
+  .toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+  .toggle[aria-checked="true"]{background:var(--red)}
+  .toggle[aria-checked="true"] i{transform:translateX(24px)}
   .mono{font-family:Consolas,monospace;color:var(--white);user-select:text}
 
   /* ---------- bara de jos ---------- */
@@ -320,6 +324,7 @@
       <div class="box">
         <div class="row"><div><b>Server</b><span class="mono" id="setServer"></span></div><button class="btn red" id="play2">Conectare</button></div>
         <div class="row"><div><b>Comunitatea pe Discord</b><span>Anunțuri, suport și cereri de ajutor</span></div><button class="btn" id="discord"><svg width="18" height="18"><use href="#i-discord"/></svg>Discord</button></div>
+        <div class="row"><div><b>Muzică în meniu</b><span>Muzica GTA V din fundalul meniului</span></div><button class="toggle" id="music" role="switch" aria-checked="false"><i></i></button></div>
         <div class="row"><div><b>Setările jocului</b><span>Grafica, sunetul și tastele se schimbă din meniul de pauză al jocului (ESC → Setări).</span></div></div>
         <div class="row"><div><b>Ieșire</b><span>Închide Basarabia RP</span></div><button class="btn" id="quit"><svg width="18" height="18"><use href="#i-exit"/></svg>Ieșire</button></div>
       </div>
@@ -417,6 +422,16 @@
   $("close").addEventListener("click", function () { native("exit"); });
   $("discord").addEventListener("click", function () { native("openUrl", BRP.discord); });
   $("setServer").textContent = BRP.server;
+
+  // muzica din meniu: oprita implicit (ui_disableMusicTheme = true); setarea e salvata de client
+  function musicOn() { try { return localStorage.getItem("brp_music") === "1"; } catch (e) { return false; } }
+  function applyMusic(on) {
+    $("music").setAttribute("aria-checked", on ? "true" : "false");
+    native("setArchivedConvar", JSON.stringify({ name: "ui_disableMusicTheme", value: on ? "false" : "true" }));
+    try { localStorage.setItem("brp_music", on ? "1" : "0"); } catch (e) {}
+  }
+  applyMusic(musicOn());
+  $("music").addEventListener("click", function () { applyMusic(!musicOn()); });
 
   document.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && document.body.getAttribute("data-state") === "idle" && $("v-home").classList.contains("on")) connect();

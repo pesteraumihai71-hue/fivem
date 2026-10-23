@@ -168,7 +168,9 @@ Wants=network-online.target
 Type=simple
 User=$SVC_USER
 WorkingDirectory=$DATA_DIR
-ExecStart=$SERVER_DIR/run.sh +exec server.cfg
+# FXServer se opreste daca intrarea consolei se inchide (EOF) -> ii dam o intrare care nu se termina
+ExecStart=/bin/sh -c 'tail -f /dev/null | exec $SERVER_DIR/run.sh +exec server.cfg'
+KillMode=control-group
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
