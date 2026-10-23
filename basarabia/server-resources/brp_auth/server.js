@@ -348,8 +348,12 @@ function configError() {
     const missing = ['brp_authSecret', 'brp_discordClientId', 'brp_discordClientSecret', 'brp_auth_redirectUri']
         .filter((n) => !cfg(n));
     if (cfg('brp_authSecret') && cfg('brp_authSecret').length < 32) missing.push('brp_authSecret (minim 32 caractere)');
-    for (const key of ownershipMode()) {
-        if (key === 'steam') missing.push(...platforms.steam.missing());
+    // cheia Steam e obligatorie doar daca verificarea licentei e obligatorie;
+    // altfel, fara cheie, butonul Steam pur si simplu nu apare
+    if (ownershipRequired()) {
+        for (const key of ownershipMode()) {
+            if (key === 'steam') missing.push(...platforms.steam.missing());
+        }
     }
     return missing.length ? missing : null;
 }
