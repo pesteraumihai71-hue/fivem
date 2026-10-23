@@ -49,11 +49,17 @@ jobs:
       - name: Build server (durează)
         working-directory: src
         run: |
+          set -o pipefail
+          report_failure() {
+            tail -n 80 /tmp/build.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}' > /tmp/tail.txt
+            echo "::error title=Build server esuat (ultimele 80 de linii)::$(cat /tmp/tail.txt)"
+            exit 1
+          }
           docker run --rm \
             -v "$PWD:/workspace" -w /workspace \
             -e JOB_SLOTS=$(nproc) \
             -e CI_PIPELINE_ID=${{ github.run_number }} \
-            brp-server-builder sh -ec '
+            brp-server-builder sh -exc '
               # resursa de sistem "chat" (din codul public). FARA txAdmin (monitor):
               # serverul Basarabia RP porneste direct cu server.cfg.
               (cd ext/system-resources && sh build.sh)
@@ -72,7 +78,7 @@ jobs:
               chmod +x run.sh
               XZ_OPT=-T0 tar cJf basarabia-server-linux.tar.xz alpine/ run.sh
               chown $(stat -c %u .):$(stat -c %g .) basarabia-server-linux.tar.xz
-            '
+            ' 2>&1 | tee /tmp/build.log || report_failure
           ls -la basarabia-server-linux.tar.xz
 
       - name: Upload (Artifacts)
