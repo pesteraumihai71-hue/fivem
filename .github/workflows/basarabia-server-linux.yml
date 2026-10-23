@@ -85,6 +85,9 @@ jobs:
               mkdir -p alpine/opt/cfx-server/citizen/system_resources/
               cp -a ext/system-resources/data/* alpine/opt/cfx-server/citizen/system_resources/
               rm -f alpine/opt/cfx-server/*.dbg
+              # componenta inchisa Cfx (svadhesive) nu exista in buildul public -> o scoatem din lista
+              sed -i '/"svadhesive"/d' alpine/opt/cfx-server/components.json
+              grep -q svadhesive alpine/opt/cfx-server/components.json && exit 1 || true
               rm -rf alpine/src alpine/fivem-private
               cp -a data/server_proot/* .
               chmod +x run.sh
