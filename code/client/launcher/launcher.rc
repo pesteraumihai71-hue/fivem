@@ -42,6 +42,9 @@ IDI_SDK					ICON					"fivem_sdk.ico"
 #ifdef LAUNCHER_PERSONALITY_MAIN
 #if defined(GTA_FIVE) || defined(GTA_NY)
 IDM_BACKDROP			MEOW					"backdrop.png"
+#if defined(GTA_FIVE)
+IDM_BRP_LOGO			MEOW					"brp_logo.png"
+#endif
 #else
 IDM_BACKDROP			MEOW "backdrop_rdr.png"
 #endif

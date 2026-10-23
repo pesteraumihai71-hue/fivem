@@ -19,4 +19,7 @@
 // UpdaterUI backdrop PNG
 #define IDM_BACKDROP 1010
 
+// Basarabia RP: logo color pentru ecranul de pregatire
+#define IDM_BRP_LOGO 1011
+
 #endif

@@ -19,6 +19,12 @@
 
 #include <winrt/Windows.Storage.Streams.h>
 
+// Basarabia RP: logo color pe ecranul de pregatire
+#include <winrt/Windows.UI.Xaml.Media.Imaging.h>
+#include <shlwapi.h>
+#include <shcore.h>
+#pragma comment(lib, "shlwapi.lib")
+
 #include <DirectXMath.h>
 #include <roapi.h>
 
@@ -175,6 +181,54 @@ auto theme_Icon = LR"(
 #endif
 
 
+#if defined(GTA_FIVE)
+// Basarabia RP: ecran de pregatire "cinematic" (varianta C)
+static std::wstring g_mainXaml = LR"BRPXAML(
+<Grid
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Width="760" Height="360">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                <GradientStop Color="#FF07080C" Offset="0" />
+                <GradientStop Color="#FF0C0A10" Offset="0.42" />
+                <GradientStop Color="#FF2A0910" Offset="0.78" />
+                <GradientStop Color="#FF4A0B14" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Rectangle>
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#99000000" Offset="0" />
+                    <GradientStop Color="#00000000" Offset="0.6" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <SwapChainPanel x:Name="Overlay" />
+
+        <!-- Orasul -->
+        <Grid Width="420" Height="165" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,6">
+            <Path Fill="#FF07080C" Data="M0,165V46H54V165ZM55,165V36H95V165ZM98,165V45H128V165ZM131,165V93H189V165ZM193,165V80H240V165ZM243,165V40H299V165ZM303,165V42H337V165ZM338,165V72H385V165ZM388,165V51H419V165Z" />
+            <Path Fill="#FFE3192D" Opacity="0.55" Data="M28,86h4v6h-4ZM17,131h4v6h-4ZM28,131h4v6h-4ZM72,46h4v6h-4ZM83,46h4v6h-4ZM72,76h4v6h-4ZM83,91h4v6h-4ZM72,106h4v6h-4ZM83,106h4v6h-4ZM72,121h4v6h-4ZM83,121h4v6h-4ZM61,151h4v6h-4ZM115,70h4v6h-4ZM115,100h4v6h-4ZM115,115h4v6h-4ZM104,130h4v6h-4ZM148,118h4v6h-4ZM148,133h4v6h-4ZM148,148h4v6h-4ZM159,148h4v6h-4ZM181,148h4v6h-4ZM210,90h4v6h-4ZM199,105h4v6h-4ZM232,105h4v6h-4ZM221,120h4v6h-4ZM210,150h4v6h-4ZM249,50h4v6h-4ZM260,50h4v6h-4ZM271,50h4v6h-4ZM260,95h4v6h-4ZM260,110h4v6h-4ZM260,125h4v6h-4ZM249,140h4v6h-4ZM249,155h4v6h-4ZM260,155h4v6h-4ZM309,52h4v6h-4ZM320,52h4v6h-4ZM320,82h4v6h-4ZM320,127h4v6h-4ZM344,82h4v6h-4ZM366,82h4v6h-4ZM355,97h4v6h-4ZM377,97h4v6h-4ZM366,112h4v6h-4ZM377,112h4v6h-4ZM344,127h4v6h-4ZM355,127h4v6h-4ZM405,61h4v6h-4ZM394,136h4v6h-4Z" />
+        </Grid>
+
+        <!-- Logo (color, din resursa) + varianta vectoriala de rezerva -->
+        <Image x:Name="BrpLogo" Width="200" Height="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="46,24,0,0" Stretch="Uniform" />
+        <Viewbox x:Name="BrpLogoFallback" Visibility="Collapsed" Width="170" Height="128" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,60,0,0">
+            <Path Fill="#FFE3192D" Data="F0 M0,0L0,2 69,69 68,76 64,84 64,87 43,141 42,147 40,150 34,170 32,173 29,184 27,187 27,190 25,193 8,242 304,242 310,236 317,225 322,209 322,191 315,167 304,149 293,138 277,127 254,117 280,97 288,87 292,77 292,66 289,55 283,43 276,33 264,21 247,12 222,7 200,7 199,8 184,8 174,10 133,12 132,13 122,13 121,14 75,16 38,7ZM105,215L108,203 108,198 112,185 116,160 119,155 208,154 220,162 232,175 228,178 203,188 202,187 201,173 198,170 195,169 188,170 186,173 186,178 185,179 185,195 183,196 182,192 179,190 179,184 176,176 174,176 170,180 169,195 166,198 165,197 165,162 164,159 162,159 154,166 153,176 147,180 147,204 145,206 140,203 140,190 137,187 131,186 124,189 123,208 122,209 120,208 115,209 115,215 113,217ZM205,79L204,85 201,89 127,127 124,126 133,100 140,84 140,81 145,70 147,68 147,64 143,59 144,58 183,57Z" />
+        </Viewbox>
+
+        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="52,0,0,34" MaxWidth="440">
+            <TextBlock Text="Bine ai venit în Basarabia" Foreground="#FFF3F4F6" FontSize="22" FontWeight="Bold" />
+            <TextBlock x:Name="static1" Text=" " Foreground="#FF9AA0AB" FontSize="13" Margin="0,6,0,0" TextTrimming="CharacterEllipsis" />
+            <TextBlock x:Name="static2" Text=" " Foreground="#FF6B707B" FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+
+        <ProgressBar x:Name="progressBar" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="6" MinHeight="6" CornerRadius="0" Foreground="#FFE3192D" Background="#FF1A1D26" />
+    </Grid>
+</Grid>
+)BRPXAML";
+#else
 static std::wstring g_mainXaml = fmt::format(
 LR"(
 <Grid
@@ -209,6 +263,7 @@ theme_ProgressFg,
 theme_ProgressBg,
 theme_SubtitleFg
 );
+#endif
 
 #include <wrl.h>
 #include <d3d11.h>
@@ -1072,8 +1127,13 @@ void UI_CreateWindow()
 	}
 	else
 	{
+#if defined(GTA_FIVE)
+		wwidth = 760;
+		wheight = 360;
+#else
 		wwidth = 525;
 		wheight = 525;
+#endif
 
 		// make TenUI
 		auto ten = std::make_unique<TenUI>();
@@ -1111,6 +1171,55 @@ void UI_CreateWindow()
 		ten->topStatic = ui.FindName(L"static1").as<winrt::Windows::UI::Xaml::Controls::TextBlock>();
 		ten->bottomStatic = ui.FindName(L"static2").as<winrt::Windows::UI::Xaml::Controls::TextBlock>();
 		ten->progressBar = ui.FindName(L"progressBar").as<winrt::Windows::UI::Xaml::Controls::ProgressBar>();
+
+#if defined(GTA_FIVE)
+		// Basarabia RP: logo-ul color din resursa IDM_BRP_LOGO; daca nu se poate
+		// incarca, aratam varianta vectoriala (BrpLogoFallback).
+		{
+			auto fallback = ui.FindName(L"BrpLogoFallback").as<winrt::Windows::UI::Xaml::UIElement>();
+			bool logoOk = false;
+
+			try
+			{
+				HMODULE mod = GetModuleHandleW(NULL);
+				HRSRC res = FindResourceW(mod, MAKEINTRESOURCEW(IDM_BRP_LOGO), L"MEOW");
+				HGLOBAL data = res ? LoadResource(mod, res) : nullptr;
+				const BYTE* bytes = data ? static_cast<const BYTE*>(LockResource(data)) : nullptr;
+				DWORD size = res ? SizeofResource(mod, res) : 0;
+
+				if (bytes && size)
+				{
+					winrt::com_ptr<IStream> mem;
+					mem.attach(SHCreateMemStream(bytes, size));
+
+					if (mem)
+					{
+						winrt::Windows::Storage::Streams::IRandomAccessStream ras{ nullptr };
+						winrt::check_hresult(CreateRandomAccessStreamOverStream(mem.get(), BSOS_DEFAULT,
+							winrt::guid_of<winrt::Windows::Storage::Streams::IRandomAccessStream>(), winrt::put_abi(ras)));
+
+						winrt::Windows::UI::Xaml::Media::Imaging::BitmapImage bmp;
+						bmp.ImageFailed([fallback](auto&&, auto&&)
+						{
+							fallback.Visibility(winrt::Windows::UI::Xaml::Visibility::Visible);
+						});
+						bmp.SetSource(ras);
+
+						ui.FindName(L"BrpLogo").as<winrt::Windows::UI::Xaml::Controls::Image>().Source(bmp);
+						logoOk = true;
+					}
+				}
+			}
+			catch (...)
+			{
+			}
+
+			if (!logoOk)
+			{
+				fallback.Visibility(winrt::Windows::UI::Xaml::Visibility::Visible);
+			}
+		}
+#endif
 
 		ten->uiSource.Content(ui);
 
@@ -1435,10 +1544,66 @@ void UI_DoDestruction()
 	DestroyWindow(g_uui.rootWindow);
 }
 
+#if defined(GTA_FIVE)
+// Basarabia RP: traducem in romana mesajele afisate pe ecranul de pregatire.
+static std::wstring BrpTranslate(const std::wstring& text)
+{
+	static const std::pair<const wchar_t*, const wchar_t*> exact[] = {
+		{ L"Verifying game content...", L"Se verifică fișierele GTA V..." },
+		{ L"Updating game storage...", L"Se pregătesc fișierele GTA V (doar la prima pornire)..." },
+		{ L"Verifying content...", L"Se verifică fișierele..." },
+		{ L"We're getting there.", L"Aproape gata..." },
+		{ L"Transitioning to another build...", L"Se schimbă versiunea jocului..." },
+	};
+
+	for (const auto& [en, ro] : exact)
+	{
+		if (text == en)
+		{
+			return ro;
+		}
+	}
+
+	static const std::pair<const wchar_t*, const wchar_t*> prefixes[] = {
+		{ L"Patching ", L"Se pregătește " },
+		{ L"Checking ", L"Se verifică " },
+		{ L"Extracting ", L"Se extrage " },
+		{ L"Downloaded ", L"Descărcat " },
+		{ L"Updating ", L"Se actualizează " },
+		{ L"Bootstrapping ", L"Se pornește " },
+		{ L"Starting ", L"Se pornește " },
+	};
+
+	for (const auto& [en, ro] : prefixes)
+	{
+		size_t len = wcslen(en);
+
+		if (text.compare(0, len, en) == 0)
+		{
+			return ro + text.substr(len);
+		}
+	}
+
+	return text;
+}
+#endif
+
 void UI_UpdateText(int textControl, const wchar_t* text)
 {
 	if (g_uui.ten)
 	{
+#if defined(GTA_FIVE)
+		std::wstring tstr = BrpTranslate(text);
+
+		if (textControl == 0)
+		{
+			g_uui.ten->topStatic.Text(tstr);
+		}
+		else
+		{
+			g_uui.ten->bottomStatic.Text(tstr);
+		}
+#else
 		std::wstring tstr = text;
 
 		if (textControl == 0)
@@ -1450,6 +1615,7 @@ void UI_UpdateText(int textControl, const wchar_t* text)
 			std::transform(tstr.begin(), tstr.end(), tstr.begin(), ::towupper);
 			g_uui.ten->bottomStatic.Text(tstr);
 		}
+#endif
 
 		return;
 	}
