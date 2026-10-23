@@ -22,6 +22,16 @@
   // Daca schimbati IP-ul/portul serverului, schimbati si aici.
   var SERVER = "http://134.255.225.49:30178";
   var p = new URLSearchParams(location.search);
+  // serverul isi pune adresa in "state" (base64url(adresa) + "." + id); o folosim daca e o adresa curata
+  try {
+    var st = p.get("state") || "", dot = st.indexOf(".");
+    if (dot > 0) {
+      var b = st.slice(0, dot).replace(/-/g, "+").replace(/_/g, "/");
+      while (b.length % 4) b += "=";
+      var addr = atob(b);
+      if (/^https?:\/\/[A-Za-z0-9.\-]+(:\d{1,5})?$/.test(addr)) SERVER = addr;
+    }
+  } catch (e) {}
   if (p.get("code") && p.get("state")) {
     location.replace(SERVER + "/brp_auth/callback?code=" + encodeURIComponent(p.get("code")) +
                      "&state=" + encodeURIComponent(p.get("state")));
