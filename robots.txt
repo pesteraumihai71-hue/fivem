@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://pesteraumihai71-hue.github.io/fivem/sitemap.xml
