@@ -49,6 +49,13 @@
 
   /* ---------- zona principala ---------- */
   .main{position:relative;overflow:hidden;background:url(static/media/32000f5a0b55eccb6d79bg2.jpg) center 70%/cover no-repeat,var(--night)}
+  /* fotografie: Parlamentul noaptea, in dreapta, topita in fundal */
+  .main::after{content:"";position:absolute;top:0;right:0;width:72%;height:78%;background:url(static/media/parlament-noapte.jpg) 60% 40%/cover no-repeat;
+               filter:saturate(1.05) brightness(.8);opacity:.9;pointer-events:none;
+               -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 38%),linear-gradient(180deg,#000 55%,transparent 100%);-webkit-mask-composite:source-in;mask-composite:intersect}
+  .main>*{position:relative;z-index:1}
+  .main>.view{position:absolute}
+  .main>.close{position:absolute;z-index:5}
   .main::before{content:"";position:absolute;inset:0;background:
       radial-gradient(70% 55% at 30% 38%,rgba(227,25,45,.10),transparent 70%),
       linear-gradient(90deg,rgba(8,9,12,.82) 0%,rgba(8,9,12,.35) 55%,rgba(8,9,12,.55) 100%),
@@ -310,6 +317,7 @@
   ];
   // imaginile cardurilor: bucati diferite din fundal, daca stirea nu are "image"
   var CARD_BG = ["20% 92%", "55% 96%", "88% 92%"];
+  var CARD_IMG = ["static/media/chisinau-centru.jpg", "static/media/parlament-noapte.jpg", ""];
 
   var native = function (name, arg) {
     try { if (window.invokeNative) window.invokeNative(name, arg == null ? "" : arg); } catch (e) {}
@@ -420,6 +428,7 @@
   // ---------------------------------------------------------------------------
   function imgStyle(n, i) {
     if (n.image && /^https:\/\//.test(n.image)) return "background-image:url('" + encodeURI(n.image).replace(/'/g, "%27") + "')";
+    if (CARD_IMG[i % CARD_IMG.length]) return "background-image:url(" + CARD_IMG[i % CARD_IMG.length] + ");background-position:center 45%";
     return "background-image:linear-gradient(180deg,rgba(227,25,45,.18),rgba(0,0,0,.2)),url(static/media/32000f5a0b55eccb6d79bg2.jpg);background-size:cover,260%;background-position:center," + CARD_BG[i % CARD_BG.length];
   }
   function renderNews(list) {
