@@ -1,0 +1,94 @@
+# ============================================================================
+#  Basarabia RP - build server propriu (FXServer + txAdmin) pentru Linux
+#
+#  Rezultat: basarabia-server-linux.tar.xz (acelasi format ca artifactele
+#  oficiale Linux: alpine/ + run.sh), atasat la un Release "server-<versiune>"
+#  marcat ca pre-release (NU devine "latest", ca sa nu afecteze butonul de
+#  descarcare de pe site).
+#
+#  Pornire: Actions -> "Basarabia RP - Build server (Linux)" -> Run workflow.
+# ============================================================================
+
+name: Basarabia RP - Build server (Linux)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versiunea serverului (ex. 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+
+    steps:
+      - name: Eliberare spațiu pe disc
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - name: Clonare cod + submodule
+        run: |
+          git config --global core.symlinks true
+          git clone "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" src
+          cd src
+          git checkout ${{ github.sha }}
+          git submodule update --init --depth=1 --jobs=8
+
+      - name: Imagine de build (Alpine + proot)
+        working-directory: src
+        run: docker build -t brp-server-builder -f code/tools/ci/docker-builder/Dockerfile .
+
+      - name: Build server (durează)
+        working-directory: src
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" -w /workspace \
+            -e JOB_SLOTS=$(nproc) \
+            -e CI_PIPELINE_ID=${{ github.run_number }} \
+            brp-server-builder sh -ec '
+              # txAdmin (monitor) + chat, din sursele lor publice
+              (cd ext/system-resources && sh build.sh)
+
+              # compilarea propriu-zisa (scriptul public Cfx, fara componente private)
+              sh code/tools/ci/build_server_docker_alpine_public.sh
+
+              # impachetare, ca artifactele oficiale Linux
+              cp -a alpine/lib/ld-musl-x86_64.so.1 alpine/opt/cfx-server/
+              mkdir -p alpine/opt/cfx-server/citizen/system_resources/
+              cp -a ext/system-resources/data/* alpine/opt/cfx-server/citizen/system_resources/
+              rm -f alpine/opt/cfx-server/*.dbg
+              rm -rf alpine/src alpine/fivem-private
+              cp -a data/server_proot/* .
+              chmod +x run.sh
+              XZ_OPT=-T0 tar cJf basarabia-server-linux.tar.xz alpine/ run.sh
+              chown $(stat -c %u .):$(stat -c %g .) basarabia-server-linux.tar.xz
+            '
+          ls -la basarabia-server-linux.tar.xz
+
+      - name: Upload (Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: basarabia-server-linux-${{ inputs.version }}
+          path: src/basarabia-server-linux.tar.xz
+          retention-days: 30
+
+      - name: Release (pre-release, nu "latest")
+        working-directory: src
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="server-${{ inputs.version }}"
+          gh release delete "$tag" -R "${{ github.repository }}" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$tag" basarabia-server-linux.tar.xz \
+            -R "${{ github.repository }}" --target ${{ github.sha }} \
+            --prerelease --latest=false \
+            --title "Basarabia RP server ${{ inputs.version }} (Linux)" \
+            --notes "Server propriu Basarabia RP (FXServer + txAdmin), fără Cfx.re. Instrucțiuni: basarabia/SERVER-PROPRIU.md"

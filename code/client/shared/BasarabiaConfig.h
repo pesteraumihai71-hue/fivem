@@ -30,6 +30,10 @@
 // ---------------------------------------------------------------------------
 #define BRP_SERVER_ADDRESS  "134.255.225.49:30178"
 
+// Pagina de login cu Discord (servita de resursa `brp_auth` de pe serverul vostru).
+// Daca schimbati IP-ul/portul serverului, schimbati si aici.
+#define BRP_AUTH_LOGIN_URL_W L"http://134.255.225.49:30178/brp_auth/login"
+
 // ---------------------------------------------------------------------------
 // 3. Protocolul de link pentru site/Discord: basarabiarp://connect/ip:port
 //    (doar litere mici, fără spații)

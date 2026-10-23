@@ -58,6 +58,9 @@
 #include <StructuredTrace.h>
 
 #include "CnlEndpoint.h"
+
+// Basarabia RP (BasarabiaIdentityProvider.cpp)
+extern std::shared_ptr<ConVar<std::string>> g_brpAuthSecret;
 using json = nlohmann::json;
 
 static std::forward_list<fx::ServerIdentityProviderBase*> g_serverProviders;
@@ -622,7 +625,15 @@ static InitFunction initFunction([]()
 
 			TicketData ticketData;
 
-			if (!lanVar->GetValue())
+			// Basarabia RP: cu `brp_authSecret` setat, autentificarea o face BasarabiaIdentityProvider
+			// (bilet propriu, login Discord) - nu se mai cere biletul Cfx.
+			const bool brpAuth = []()
+			{
+				auto var = g_brpAuthSecret;
+				return var && !var->GetValue().empty();
+			}();
+
+			if (!lanVar->GetValue() && !brpAuth)
 			{
 				auto ticketIt = postMap.find("cfxTicket2");
 
@@ -787,7 +798,7 @@ static InitFunction initFunction([]()
 				client->SetData("entitlementJson", *ticketData.extraJson);
 			}
 
-			if (lanVar->GetValue())
+			if (lanVar->GetValue() || brpAuth)
 			{
 				gameNameMatch = true;
 				serverIdMatch = true;

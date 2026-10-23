@@ -38,6 +38,9 @@
 #include <HostSharedData.h>
 #include <BasarabiaConfig.h>
 
+// BasarabiaAuth.cpp
+void BrpSaveTicket(const std::string& ticket);
+
 #include <skyr/url.hpp>
 
 #include <se/Security.h>
@@ -1368,6 +1371,7 @@ void Component_RunPreInit()
 	static std::string connectHost;
 	static std::string connectParams;
 	static std::string authPayload;
+	bool brpTicketReceived = false;
 
 	static auto protocolLinkStart = ToNarrow(hostData->GetLinkProtocol(L":"));
 
@@ -1395,6 +1399,36 @@ void Component_RunPreInit()
 							}
 						}
 					}
+					else if (parsed->host() == "brp-auth")
+					{
+						// Basarabia RP: biletul de login Discord (vezi BasarabiaAuth.cpp)
+						// parametrul `t` din ?t=<bilet> (biletul are doar caractere URL-safe)
+						std::string query = parsed->search();
+						if (!query.empty() && query[0] == '?')
+						{
+							query = query.substr(1);
+						}
+
+						for (size_t pos = 0; pos <= query.size();)
+						{
+							size_t amp = query.find('&', pos);
+							std::string part = query.substr(pos, amp == std::string::npos ? std::string::npos : amp - pos);
+
+							if (part.rfind("t=", 0) == 0 && part.size() > 2)
+							{
+								BrpSaveTicket(part.substr(2));
+								brpTicketReceived = true;
+								break;
+							}
+
+							if (amp == std::string::npos)
+							{
+								break;
+							}
+
+							pos = amp + 1;
+						}
+					}
 					else if (parsed->host() == "accept-auth")
 					{
 						if (!parsed->search().empty())
@@ -1410,6 +1444,13 @@ void Component_RunPreInit()
 	}
 
 	LocalFree(argv);
+
+	// Basarabia RP: linkul de login doar salveaza biletul. Daca jocul ruleaza deja,
+	// il preia de acolo; procesul acesta (al doilea) se inchide.
+	if (brpTicketReceived && !(hostData->IsMasterProcess() || hostData->IsGameProcess()))
+	{
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
 
 #ifdef GTA_FIVE
 	// Basarabia RP: dacă jocul nu a fost pornit cu un link anume,
