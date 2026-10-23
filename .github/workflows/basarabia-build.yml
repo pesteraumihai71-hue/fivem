@@ -23,6 +23,14 @@ on:
         options:
           - windows-2022
           - self-hosted
+      publish:
+        description: "Publică installerul pentru jucători (link public de descărcare)"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write   # necesar pentru publicarea installerului (Release)
 
 jobs:
   build:
@@ -100,6 +108,23 @@ jobs:
           name: BasarabiaRP-Setup-${{ inputs.version }}
           path: C:\brp\basarabia\output\BasarabiaRP-Setup.exe
           retention-days: 30
+
+      # Publică installerul pentru jucători (fără cont GitHub).
+      # Link fix, mereu ultima versiune:
+      #   https://github.com/pesteraumihai71-hue/fivem/releases/latest/download/BasarabiaRP-Setup.exe
+      - name: Publicare pentru jucători (Release)
+        if: inputs.publish
+        shell: pwsh
+        working-directory: C:\brp
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "v${{ inputs.version }}"
+          gh release delete $tag -R ${{ github.repository }} --yes --cleanup-tag 2>$null
+          gh release create $tag "basarabia\output\BasarabiaRP-Setup.exe" `
+            -R ${{ github.repository }} --target ${{ github.sha }} --latest `
+            --title "Basarabia RP $tag" `
+            --notes "Installer Basarabia Roleplay $tag. Necesită GTA V instalat."
 
       - name: Spațiu pe disc (după)
         if: always()
