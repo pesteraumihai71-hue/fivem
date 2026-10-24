@@ -2750,7 +2750,7 @@ static InitFunction initFunction([]()
 
 	OnGameFrame.Connect([]()
 	{
-		// Basarabia RP: fara muzica GTA/FiveM in meniu (se poate porni din Setari)
+		// Basarabia RP: fara muzica GTA/FiveM in meniu
 		static ConVar<bool> arenaWarVariable("ui_disableMusicTheme", ConVar_Archive | ConVar_UserPref, true);
 #ifdef GTA_FIVE
 		static ConVar<bool> arenaWarVariableForce("ui_forceMusicTheme", ConVar_Archive | ConVar_UserPref, false);
@@ -2797,6 +2797,9 @@ static InitFunction initFunction([]()
 					active = false;
 				}
 			}
+
+			// Basarabia RP: muzica din meniu / de la incarcare e scoasa complet (fara optiune)
+			active = false;
 
 #if SMTEST
 			static uint8_t mySubmix = 0;
