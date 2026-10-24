@@ -121,6 +121,8 @@ $env:CFX_PRODUCT_NAME = "fivem"
 $env:CI_PROJECT_DIR = $Root
 
 Push-Location $Root
+# mesajele normale scrise de git/msbuild pe stderr nu trebuie sa opreasca scriptul
+$ErrorActionPreference = "Continue"
 try {
     & pwsh -NoProfile -ExecutionPolicy Bypass -File "$Root\basarabia\ci\build.ps1" *>&1 | Tee-Object -FilePath "$Root\build.log"
     $failed = ($LASTEXITCODE -ne 0) -or (Select-String -Quiet -Path "$Root\build.log" -Pattern "BUILD E.{1,3}UAT")
