@@ -1403,6 +1403,11 @@ concurrency::task<void> NetLibrary::ConnectToServer(const std::string& rootUrl)
 									auto policySuccess = [this, maxClients]()
 									{
 										// add forced policies
+										// Basarabia RP: serverul propriu nu primeste politica de la Cfx (fara sv_licenseKeyToken),
+										// asa ca dam mereu maparea pe subfoldere: fara ea fisierele addon cu "^" (ex. haine
+										// mp_m_freemode_01_<colectie>^lowr_000_u.ydd) nu se inregistreaza si hainele apar invizibile.
+										policies.insert("subdir_file_mapping");
+
 										if (maxClients <= 10)
 										{
 											// development/testing servers (<= 10 clients max - see ZAP defaults) get subdir_file_mapping granted

@@ -374,10 +374,11 @@ void Install_RunPostInstall()
 	wcsrchr(exePath, L'\\')[0] = L'\0';
 
 	std::initializer_list<std::tuple<std::wstring, std::wstring, int, std::wstring>> links = {
-#ifdef GTA_FIVE
-		{ L" - Cfx.re Development Kit (FxDK)", L"-fxdk", -203, L"CitizenFX.FiveM.SDK" },
-#endif
+		// Basarabia RP: fara scurtatura FxDK (unealta pentru dezvoltatori) la jucatori
 	};
+
+	DeleteFileW(fmt::sprintf(L"%s\\%s - Cfx.re Development Kit (FxDK).lnk", exePath, PRODUCT_NAME).c_str());
+
 
 	for (auto& link : links)
 	{
