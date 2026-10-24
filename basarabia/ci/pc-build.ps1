@@ -129,6 +129,11 @@ $env:CI_COMMIT_SHA = $sha
 $env:CI_PIPELINE_ID = ($Version -replace '\D', '')
 $env:CFX_PRODUCT_NAME = "fivem"
 $env:CI_PROJECT_DIR = $Root
+# cu 16 GB RAM sau mai putin compilam mai putine fisiere deodata (altfel procesul poate fi oprit de Windows)
+if ($ramGB -le 16) { $env:BRP_MSBUILD_CPUS = "4"; Write-Host "  RAM $ramGB GB: compilez cu 4 procese in paralel" }
+
+# PC-ul nu are voie sa intre in Sleep cat compileaza
+try { powercfg /change standby-timeout-ac 0; powercfg /change hibernate-timeout-ac 0 } catch {}
 
 Push-Location $Root
 # mesajele normale scrise de git/msbuild pe stderr nu trebuie sa opreasca scriptul

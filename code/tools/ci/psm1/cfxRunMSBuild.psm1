@@ -43,10 +43,14 @@ function Invoke-RunMSBuild {
         Start-Process powershell -ArgumentList "-ExecutionPolicy unrestricted $sogBefore" -NoNewWindow -Wait
     }
 
+    # Basarabia RP: pe PC-uri cu memorie putina se poate limita paralelismul (BRP_MSBUILD_CPUS)
+    $parallel = "-m"
+    if ($env:BRP_MSBUILD_CPUS) { $parallel = "-m:$($env:BRP_MSBUILD_CPUS)"; $env:CL_MPCount = $env:BRP_MSBUILD_CPUS }
+
     try {
         msbuild @(
             $Context.MSBuildSolution
-            "-m"        # Use all CPU cores
+            $parallel   # Use all CPU cores (sau BRP_MSBUILD_CPUS)
             "-v:q"      # Quiet verbosity level
             "-nr:False" # Don't keep MSBuild nodes alive
             "-r"        # Run restore before build
