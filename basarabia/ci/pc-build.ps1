@@ -11,6 +11,7 @@
 #  MSYS2, Inno Setup; descarca codul in C:\brp; compileaza; face installerul.
 # ============================================================================
 param(
+    [switch] $Clean,
     [string] $Version = "1.0.7",
     [string] $Branch  = "master",
     [string] $Root    = "C:\brp"
@@ -62,7 +63,9 @@ $vsComponents = @(
     "Microsoft.VisualStudio.Workload.NativeDesktop",
     "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
     "Microsoft.VisualStudio.Component.VC.ATL",
-    "Microsoft.VisualStudio.Component.Windows11SDK.22000"
+    "Microsoft.VisualStudio.Component.Windows11SDK.22000",
+    "Microsoft.Net.Component.4.6.TargetingPack",
+    "Microsoft.Net.Component.4.8.SDK"
 )
 $hasVs = (Test-Path $vswhere) -and (& $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
 if (-not $hasVs) {
@@ -109,6 +112,13 @@ if (-not ((Test-Path "$kits\Include\$want\um") -and (Test-Path "$kits\Lib\$want\
     Write-Host "  SDK $want lipseste, folosesc $($latest.Name)" -ForegroundColor Yellow
     $pm = "$Root\code\premake5.lua"
     (Get-Content -Raw $pm).Replace("systemversion '$want'", "systemversion '$($latest.Name)'") | Set-Content -NoNewline $pm
+}
+
+# --- curatenie (dupa o cadere de curent fisierele intermediare pot fi stricate) ---
+if ($Clean -and (Test-Path "$Root\.build-cache\build")) {
+    Say "Sterg fisierele intermediare vechi (-Clean)"
+    Get-Process mspdbsrv, MSBuild, cl, link -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Remove-Item -Recurse -Force "$Root\.build-cache\build" -ErrorAction SilentlyContinue
 }
 
 # --- compilare -----------------------------------------------------------
