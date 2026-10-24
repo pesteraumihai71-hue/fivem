@@ -80,6 +80,17 @@ Type: filesandordirs; Name: "{app}\FiveM.app\logs"
 Type: filesandordirs; Name: "{app}\FiveM.app\crashes"
 
 [Code]
+// Inchide launcherul / jocul pornit, ca installerul sa poata inlocui fisierele.
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  Code: Integer;
+begin
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /T /IM BasarabiaRP.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /T /FI "IMAGENAME eq FiveM_*"', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Sleep(1000);
+  Result := '';
+end;
+
 // In timpul instalarii nu afisam numele fisierelor copiate (doar bara de progres).
 procedure CurPageChanged(CurPageID: Integer);
 begin
