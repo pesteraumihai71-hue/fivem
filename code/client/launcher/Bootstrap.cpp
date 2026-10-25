@@ -74,8 +74,16 @@ bool VerifyViability();
 
 extern void ResetUpdateChannel();
 
+extern bool Brp_CheckSelfUpdate();
+
 bool Bootstrap_DoBootstrap()
 {
+	// Basarabia RP: actualizare automata a launcherului (version.json de pe site)
+	if (!Brp_CheckSelfUpdate())
+	{
+		return false;
+	}
+
 	// first check the bootstrapper version
 	char bootstrapVersion[256];
 

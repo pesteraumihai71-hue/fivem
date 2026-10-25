@@ -69,12 +69,15 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; Actualizare automata (installer pornit silentios de launcher): repornim launcherul la final
+Filename: "{app}\{#AppExe}"; Flags: nowait; Check: WizardSilent
 
 [Dirs]
 ; Folderul intern al motorului (FiveM.app) e ascuns in Explorer - jucatorul vede doar Basarabia RP
 Name: "{app}\FiveM.app"; Attribs: hidden
 
 [UninstallDelete]
+Type: files; Name: "{app}\brp_version.txt"
 Type: filesandordirs; Name: "{app}\FiveM.app\data"
 Type: filesandordirs; Name: "{app}\FiveM.app\logs"
 Type: filesandordirs; Name: "{app}\FiveM.app\crashes"
@@ -89,6 +92,13 @@ begin
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /T /FI "IMAGENAME eq FiveM_*"', '', SW_HIDE, ewWaitUntilTerminated, Code);
   Sleep(1000);
   Result := '';
+end;
+
+// Versiunea instalata - citita de launcher pentru actualizarea automata (BrpSelfUpdate.cpp)
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+    SaveStringToFile(ExpandConstant('{app}\brp_version.txt'), '{#AppVersion}', False);
 end;
 
 // In timpul instalarii nu afisam numele fisierelor copiate (doar bara de progres).

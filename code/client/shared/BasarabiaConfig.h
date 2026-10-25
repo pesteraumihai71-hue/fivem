@@ -28,11 +28,11 @@
 //    Acceptă "ip:port" (ex. "123.45.67.89:30120") sau "cfx.re/join/abc123".
 //    Lăsat gol ("") => clientul pornește în meniu, fără conectare automată.
 // ---------------------------------------------------------------------------
-#define BRP_SERVER_ADDRESS  "134.255.225.49:30178"
+#define BRP_SERVER_ADDRESS  "81.181.113.119:30120"
 
 // Pagina de login cu Discord (servita de resursa `brp_auth` de pe serverul vostru).
 // Daca schimbati IP-ul/portul serverului, schimbati si aici.
-#define BRP_AUTH_LOGIN_URL_W L"http://134.255.225.49:30178/brp_auth/login"
+#define BRP_AUTH_LOGIN_URL_W L"http://81.181.113.119:30120/brp_auth/login"
 
 // ---------------------------------------------------------------------------
 // 3. Protocolul de link pentru site/Discord: basarabiarp://connect/ip:port
@@ -52,6 +52,12 @@
 //      obiecte pe hash). Vezi README-BASARABIA.md, secțiunea "Update-uri".
 // ---------------------------------------------------------------------------
 // #define BRP_UPDATER_URL "https://update.basarabiarp.md/updates"
+
+// Actualizare automata simpla (BrpSelfUpdate.cpp): la pornire launcherul citeste
+// acest fisier; daca "version" e mai noua decat cea instalata (brp_version.txt,
+// scris de installer), descarca installerul de la "url" si il ruleaza silentios.
+// Format: { "version": "1.0.10", "url": "https://.../BasarabiaRP-Setup.exe", "size": 176469001 }
+#define BRP_SELFUPDATE_URL  "https://raw.githubusercontent.com/pesteraumihai71-hue/fivem/master/basarabia/version.json"
 
 // Numele canalului de update pe serverul vostru (folosit doar cu BRP_UPDATER_URL)
 #define BRP_CONTENT_NAME    "basarabiarp"

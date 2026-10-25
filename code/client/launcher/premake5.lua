@@ -150,6 +150,7 @@ local function launcherpersonality_inner(name)
 		if not isLauncherPersonality(name) then
 			removefiles {
 				"Bootstrap.cpp",
+				"BrpSelfUpdate.cpp",
 				"CrossBuildLaunch.cpp",
 				"DisableNVSP.cpp",
 				"Download.cpp",
