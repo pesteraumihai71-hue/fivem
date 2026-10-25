@@ -151,6 +151,7 @@ local function launcherpersonality_inner(name)
 			removefiles {
 				"Bootstrap.cpp",
 				"BrpSelfUpdate.cpp",
+				"BrpAntiCheat.cpp",
 				"CrossBuildLaunch.cpp",
 				"DisableNVSP.cpp",
 				"Download.cpp",

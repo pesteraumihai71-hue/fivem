@@ -14,8 +14,6 @@
 #include <wintrust.h>
 #include <softpub.h>
 #include <sstream>
-#include <tlhelp32.h>
-#include <vector>
 
 #include <CfxState.h>
 #include <HostSharedData.h>
@@ -78,84 +76,14 @@ extern void ResetUpdateChannel();
 
 extern bool Brp_CheckSelfUpdate();
 
-// Basarabia RP / TRKAC: verificare la pornirea launcherului.
-// Citeste DOAR numele proceselor active (ca in Task Manager) si le compara cu o lista
-// explicita de unelte de cheat cunoscute. Nu citeste fisiere, nu citeste memoria altor
-// programe, nu trimite nimic in retea si nu ramane pornit in fundal. Daca gaseste o unealta
-// de cheat deschisa, afiseaza un mesaj si nu lasa jucatorul sa intre pana o inchide.
-static bool BrpRunTrkacStartupScan()
-{
-	static const wchar_t* blockedProcessNames[] = {
-		L"cheatengine.exe", L"cheatengine-x86_64.exe", L"cheatengine-i386.exe", L"cheat engine.exe",
-		L"xenos.exe", L"xenos64.exe", L"extreme injector.exe", L"extremeinjector.exe",
-		L"gh injector.exe", L"gh injector gui.exe", L"processhacker.exe",
-	};
-
-	// dezvoltatorii pot sari peste verificare: launcher pornit cu -brpdev
-	if (wcsstr(GetCommandLineW(), L"-brpdev"))
-	{
-		return true;
-	}
-
-	// ecran vizibil la pornire (ca EasyAntiCheat): brand + bara de progres
-	UI_DoCreation(true);
-	UI_UpdateText(0, BRP_PRODUCT_NAME_W L" \u2014 TRKAC AntiCheat");
-	UI_UpdateText(1, L"Se verifica sistemul, te rugam asteapta...");
-	for (int i = 0; i <= 100; i += 10)
-	{
-		UI_UpdateProgress((double)i);
-		Sleep(12);
-	}
-
-	std::vector<std::wstring> detections;
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-	if (snapshot == INVALID_HANDLE_VALUE)
-	{
-		// nu putem verifica (ex. permisiuni) -> lasam jucatorul sa intre, nu il blocam degeaba
-		UI_DoDestruction();
-		return true;
-	}
-
-	PROCESSENTRY32W entry = {};
-	entry.dwSize = sizeof(entry);
-	if (Process32FirstW(snapshot, &entry))
-	{
-		do
-		{
-			for (const auto* blockedName : blockedProcessNames)
-			{
-				if (_wcsicmp(entry.szExeFile, blockedName) == 0)
-				{
-					detections.emplace_back(entry.szExeFile);
-					break;
-				}
-			}
-		} while (Process32NextW(snapshot, &entry));
-	}
-	CloseHandle(snapshot);
-
-	UI_DoDestruction();
-
-	if (!detections.empty())
-	{
-		std::wstring message = L"TRKAC a detectat un program care trebuie inchis inainte de conectare:\n\n";
-		for (const auto& name : detections)
-		{
-			message += L"\u2022 " + name + L"\n";
-		}
-		message += L"\nInchide programul indicat si porneste din nou launcherul.\nDaca e o greseala, scrie staff-ului pe Discord.";
-		MessageBoxW(nullptr, message.c_str(), BRP_PRODUCT_NAME_W L" \u2014 TRKAC AntiCheat", MB_OK | MB_ICONWARNING);
-		return false;
-	}
-
-	return true;
-}
+// Basarabia RP / TRKAC: verificare la pornirea launcherului (BrpAntiCheat.cpp).
+extern bool Brp_AntiCheatPreflight();
 
 bool Bootstrap_DoBootstrap()
 {
-	// Basarabia RP: TRKAC verifica procesele active la fiecare pornire
+	// Basarabia RP: TRKAC verifica procesele la pornire (nume de procese/module, semnatura; fara memorie/kernel)
 #ifdef GTA_FIVE
-	if (!BrpRunTrkacStartupScan())
+	if (!Brp_AntiCheatPreflight())
 	{
 		return false;
 	}
