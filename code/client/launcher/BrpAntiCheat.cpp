@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cwctype>
 #include <string>
+#include <cstdio>
 #include <vector>
 #include <set>
 
@@ -109,7 +110,7 @@ namespace
 		SYSTEMTIME st{};
 		GetLocalTime(&st);
 		wchar_t line[2048] = {};
-		_swprintf_s(line, L"[%04u-%02u-%02u %02u:%02u:%02u] %s\r\n",
+		swprintf_s(line, L"[%04u-%02u-%02u %02u:%02u:%02u] %s\r\n",
 			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, message.c_str());
 		DWORD written = 0;
 		WriteFile(file, line, static_cast<DWORD>(wcslen(line) * sizeof(wchar_t)), &written, nullptr);
