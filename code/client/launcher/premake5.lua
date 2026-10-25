@@ -128,7 +128,7 @@ local function launcherpersonality_inner(name)
 		symbols "Full"
 		buildoptions "/MP"
 		
-		links { "dbghelp", "psapi", "comctl32", "wininet", "winhttp", "crypt32" }
+		links { "dbghelp", "psapi", "comctl32", "wininet", "winhttp", "crypt32", "bcrypt" }
 		
 		if isLauncherPersonality(name) then
 			add_dependencies { 'vendor:minhook-crt' }
