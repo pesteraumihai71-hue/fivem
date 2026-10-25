@@ -97,11 +97,22 @@ static bool BrpRunTrkacStartupScan()
 		return true;
 	}
 
+	// ecran vizibil la pornire (ca EasyAntiCheat): brand + bara de progres
+	UI_DoCreation(true);
+	UI_UpdateText(0, BRP_PRODUCT_NAME_W L" \u2014 TRKAC AntiCheat");
+	UI_UpdateText(1, L"Se verifica sistemul, te rugam asteapta...");
+	for (int i = 0; i <= 100; i += 10)
+	{
+		UI_UpdateProgress((double)i);
+		Sleep(12);
+	}
+
 	std::vector<std::wstring> detections;
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (snapshot == INVALID_HANDLE_VALUE)
 	{
 		// nu putem verifica (ex. permisiuni) -> lasam jucatorul sa intre, nu il blocam degeaba
+		UI_DoDestruction();
 		return true;
 	}
 
@@ -122,6 +133,8 @@ static bool BrpRunTrkacStartupScan()
 		} while (Process32NextW(snapshot, &entry));
 	}
 	CloseHandle(snapshot);
+
+	UI_DoDestruction();
 
 	if (!detections.empty())
 	{
