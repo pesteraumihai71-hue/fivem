@@ -455,39 +455,22 @@ bool Brp_AntiCheatPreflight()
 	// dezvoltatorii pot sari peste verificare: launcher pornit cu -brpdev
 	if (wcsstr(GetCommandLineW(), L"-brpdev")) { return true; }
 
-	UI_DoCreation(true);
-	UI_UpdateText(0, L"TRKAC: se verifică semnătura launcherului și procesele active...");
-	UI_UpdateText(1, L"Verificare preliminară de securitate. Nu închide launcherul.");
-	Sleep(120);
-
-	// Audit-only signature baseline. A release build should be signed by the project's trusted certificate; unsigned development builds continue to run.
-	BrpVerifyCurrentExecutableSignature();
-	g_launcherBaselineHash = BrpHashCurrentExecutable();
-	if (!g_launcherBaselineHash.empty())
-		BrpLog(L"Stage 8: SHA-256 baseline al executabilului launcher a fost stabilit; verificare periodică activă.");
-	else
-		BrpLog(L"Stage 8: nu am putut stabili hash-ul launcherului; verificarea de integritate rămâne indisponibilă.");
-
+	// Verificare o singura data la pornire, SILENTIOASA (fara fereastra proprie, ca sa nu
+	// ramana agatata "DesktopWindowXamlSource (Nu raspunde)"). Fara fir care scaneaza in
+	// continuu. Citeste doar numele proceselor active; mesaj doar daca gaseste o unealta de cheat.
 	std::wstring foundName;
-	const bool blocked = BrpFindKnownTool(foundName);
-	UI_DoDestruction();
-
-	if (blocked)
+	if (BrpFindKnownTool(foundName))
 	{
 		BrpLog(L"Preflight blocat: proces detectat " + foundName);
 		const std::wstring message =
 			L"TRKAC a detectat un instrument din lista de verificare:\n\n" + foundName +
-			L"\n\nÎnchide aplicația și pornește din nou launcherul Basarabia RP.\n\n"
-			L"Dacă această detecție este o eroare, contactează staff-ul pentru verificare.";
-		MessageBoxW(nullptr, message.c_str(), L"Basarabia RP — TRKAC", MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
+			L"\n\nInchide aplicatia si porneste din nou launcherul Basarabia RP.\n\n"
+			L"Daca aceasta detectie este o eroare, contacteaza staff-ul pentru verificare.";
+		MessageBoxW(nullptr, message.c_str(), L"Basarabia RP \u2014 TRKAC", MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
 		return false;
 	}
 
-	if (IsDebuggerPresent())
-		BrpLog(L"Stage 7: debugger detectat atașat launcherului la preflight. Audit-only; nu se blochează lansarea.");
-
-	BrpLog(L"Preflight initial terminat; monitorul runtime este pornit. Stage 9: audit semnături module joc activ, numai informativ.");
-	BrpStartRuntimeMonitor();
+	BrpLog(L"Preflight terminat (verificare unica, nume procese). Fara monitor continuu.");
 	return true;
 }
 
